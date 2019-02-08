@@ -1,0 +1,14 @@
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools" tools:context=".MessageActivity">
+
+<item
+    android:id="@+id/clear"  app:showAsAction="never" android:title="Delete chat">
+</item>
+
+    <item
+        android:id="@+id/report"  app:showAsAction="never" android:title="Report this user">
+    </item>
+
+</menu>

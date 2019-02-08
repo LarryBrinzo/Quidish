@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context=".UserProfile">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_container"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/colorPrimaryDark"
+            app:expandedTitleTextAppearance="@android:color/transparent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+
+                    <LinearLayout
+                        android:id="@+id/image_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="225dp"
+                        android:gravity="center_horizontal"
+                        android:background="@drawable/profback"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/profile_image"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/cir_borderimg"
+                            android:gravity="center"
+                            android:layout_marginTop="38dp"
+                            android:text=""
+                            android:textColor="#fff"
+                            android:textSize="40dp"
+                            />
+
+
+                            <TextView
+                                android:id="@+id/usern"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textColor="#000000"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/inst"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:visibility="visible"
+                                android:gravity="center"
+                                android:textColor="#000000"
+                                android:textSize="17dp"
+                                />
+
+
+                    </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@android:color/transparent"
+                android:textStyle="bold"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title=""
+                app:titleTextAppearance="@style/Toolbar.TitleText">
+
+                <LinearLayout
+                    android:id="@+id/backbt"
+                    android:clickable="true"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:id="@+id/img1"
+                        android:layout_width="27dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="8dp"
+                        android:scaleType="centerInside"
+                        android:background="@null"
+                        app:srcCompat="@drawable/backb" />
+
+                    <ImageView
+                        android:id="@+id/img2"
+                        android:layout_width="27dp"
+                        android:layout_height="40dp"
+                        android:visibility="gone"
+                        android:layout_marginLeft="8dp"
+                        android:scaleType="centerInside"
+                        android:background="@null"
+                        app:srcCompat="@drawable/backw" />
+
+                </LinearLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:elevation="4dp"
+        android:minHeight="58dp"
+        app:tabTextColor="#2D3E4E"
+        app:tabSelectedTextColor="#1A2835"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:tabIndicatorColor="#23C5A0"
+        app:tabIndicatorHeight="3dp">
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:clipToPadding="false"
+        android:id="@+id/pager">
+
+    </android.support.v4.view.ViewPager>
+
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>
