@@ -6,7 +6,7 @@
     android:background="#FFFFFF"
     android:id="@+id/mobilecatlayout"
     android:layout_height="match_parent"
-    tools:context=".SellActivity">
+    tools:context=".PostYourAd.SellActivity">
 
     <LinearLayout
         android:id="@+id/mobilesell"

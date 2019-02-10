@@ -9,7 +9,7 @@
     android:focusable="true"
     android:layout_height="match_parent"
     android:background="#eef2f1"
-    tools:context=".MessageActivity">
+    tools:context=".Messaging.MessageActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"

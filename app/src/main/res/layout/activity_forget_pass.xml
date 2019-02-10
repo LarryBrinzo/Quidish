@@ -8,7 +8,7 @@
     android:gravity="center_horizontal"
     android:layout_centerHorizontal="true"
     android:fitsSystemWindows="true"
-    tools:context=".ForgetPass">
+    tools:context=".LoginRegister.ForgetPass">
 
     <LinearLayout
         android:id="@+id/linearLayout"

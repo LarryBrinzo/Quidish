@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:background="#FFFFFF"
     android:layout_height="match_parent"
-    tools:context=".MyChatActivity">
+    tools:context=".Messaging.MyChatActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator"

@@ -15,7 +15,7 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
-        android:name=".MyApplication"
+        android:name=".Network.MyApplication"
         android:allowBackup="true"
         android:configChanges="screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
         android:icon="@drawable/quidif"
@@ -26,7 +26,7 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateHidden|adjustResize">
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".IntroScreen.WelcomeActivity"
             android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
@@ -43,57 +43,54 @@
             android:name="android.app.default_searchable"
             android:value=".Activity3" />
 
-        <activity android:name=".Activity2"
+        <activity android:name=".LoginRegister.RegisterActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity android:name=".ForgetPass"
+        <activity android:name=".LoginRegister.ForgetPass"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+        <activity android:name=".LoginRegister.LoginActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".SearchActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SellActivity"
+        <activity android:name=".PostYourAd.SubCategoryActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".AdpostActivity"
+            android:name=".PostYourAd.AdpostActivity"
             android:launchMode="singleTop"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CategoryActivity"
+        <activity android:name=".PostYourAd.CategoryActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MyaccountActivity"
+        <activity android:name=".MyAccount.MyaccountActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ProfileDetailsActivity"
+        <activity android:name=".MyAccount.ProfileDetailsActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".LoginSignupactivity"
+        <activity android:name=".LoginRegister.LoginSignupactivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MyAdsActivity"
+        <activity android:name=".MyAdsAndUserProfile.MyAdsActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MyWishlistActivity"
+        <activity android:name=".MyAccount.MyWishlistActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ActivityMyAds"
+        <activity android:name=".MyAdsAndUserProfile.MyAdDiscriptionActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".SoldActivity"
+        <activity android:name=".SoldAdDiscriptionActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CompleteSearchActivity"
+        <activity android:name=".Home.CompleteSearchActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <activity android:name=".ZoomActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".Activity3"
+        <activity android:name=".Home.HomeActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
         <activity android:name=".SpashScreenActivity"
@@ -101,10 +98,11 @@
             android:screenOrientation="portrait"/>
 
         <receiver
-            android:name=".ConnectivityReceiver"
+            android:name=".Network.ConnectivityReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
 
@@ -131,11 +129,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MessageActivity"
+            android:name=".Messaging.MessageActivity"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MyChatActivity" />
+        <activity android:name=".Messaging.MyChatActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -147,31 +145,31 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".EditAdActivity"
+        <activity android:name=".MyAdsAndUserProfile.EditAdActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".UserProfile"
+        <activity android:name=".MyAdsAndUserProfile.UserProfile"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".YourAdActivity"
+        <activity android:name=".AdDiscriptionActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ContactUsActivity"
+        <activity android:name=".Home.ContactUsActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"/>
 
-        <service android:name=".MyFirebaseMessagingService">
+        <service android:name=".CloudMessaging.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".MyFirebaseInstanceIDService">
+        <service android:name=".CloudMessaging.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name=".No_InternetActivity"
+        <activity android:name=".Network.No_InternetActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"></activity>
     </application>

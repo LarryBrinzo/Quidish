@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context=".LoginRegister.MainActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator"

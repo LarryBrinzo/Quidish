@@ -16,7 +16,7 @@
         android:clipToPadding="false"
         android:fitsSystemWindows="true"
         android:background="#FFFFFF"
-        tools:context=".Activity3"
+        tools:context=".Home.Activity3"
         android:id="@+id/drawer_layout"
         >
 
@@ -39,7 +39,6 @@
                 android:focusableInTouchMode="true"
                 android:visibility="visible"
                 android:orientation="vertical"
-                android:gravity="center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -357,11 +356,9 @@
                         android:id="@+id/scrollView2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
                         android:clipToPadding="false"
                         android:background="#FFFFFF"
                         android:fillViewport="true"
-                        android:gravity="center_horizontal"
                         app:layout_behavior="@string/appbar_scrolling_view_behavior"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -395,18 +392,35 @@
                                 android:theme="@style/ProgressBarStyle"
                                 android:visibility="gone" />
 
-                            <android.support.v7.widget.RecyclerView
-                                android:id="@+id/recycle"
+                            <android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                xmlns:app="http://schemas.android.com/apk/res-auto"
+                                xmlns:tools="http://schemas.android.com/tools"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:layout_marginTop="5dp"
-                                android:background="#FFFFFF"
-                                android:layout_marginBottom="10dp"
-                                android:clipToPadding="false"
-                                android:fillViewport="true">
+                                >
+
+                            <com.daimajia.slider.library.SliderLayout
+                                android:id="@+id/homeSliderLayout"
+                                android:layout_width="match_parent"
+                                android:transitionName="event_image"
+                                app:layout_heightPercent="32%"
+                                />
+
+                            </android.support.percent.PercentRelativeLayout>
+                            <!--<android.support.v7.widget.RecyclerView-->
+                                <!--android:id="@+id/recycle"-->
+                                <!--android:layout_width="match_parent"-->
+                                <!--android:layout_height="match_parent"-->
+                                <!--android:layout_marginTop="5dp"-->
+                                <!--android:background="#FFFFFF"-->
+                                <!--android:layout_marginBottom="10dp"-->
+                                <!--android:clipToPadding="false"-->
+                                <!--android:fillViewport="true">-->
 
 
-                            </android.support.v7.widget.RecyclerView>
+                            <!--</android.support.v7.widget.RecyclerView>-->
+
+
 
                         </LinearLayout>
                     </android.support.v4.widget.NestedScrollView>
