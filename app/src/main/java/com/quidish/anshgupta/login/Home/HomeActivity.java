@@ -14,10 +14,10 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-
-import com.bumptech.glide.Glide;
+import com.daimajia.slider.library.Indicators.PagerIndicator;
 import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.quidish.anshgupta.login.PostYourAd.CategoryActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
@@ -29,17 +29,15 @@ import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
 import com.quidish.anshgupta.login.MyAccount.MyaccountActivity;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
 import com.quidish.anshgupta.login.R;
-import com.viewpagerindicator.CirclePageIndicator;
+
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.multidex.MultiDex;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -53,8 +51,10 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.Profile;
@@ -68,12 +68,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -82,46 +84,31 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     DrawerLayout drawer;
     TextView home,electronics,mobile,cycle,book;
     ImageButton drawtog,wishlist,voices;
+    private SliderLayout mDemoSlider;
     FloatingActionButton sell;
     String userid,mapdate,userclg="0";
-    private static ViewPager mPager;
-    private static int currentPage = 0;
-    private static int NUM_PAGES = 0;
     FirebaseDatabase firebaseDatabase;
     View homeline,bookline,cycleline,mobileline,electronicsline;
     NavigationView navigationView;
     StorageReference mstoragrref;
     HorizontalScrollView MyScrollView;
-    SliderLayout sliderLayout;
     NestedScrollView scrollView;
     FirebaseUser fuser;
-    //RecyclerAdapter recyclerAdapter,recyclerAdapterbooks,recyclerAdaptercycle,recyclerAdaptermobile,recyclerAdapterelect;
+    HashMap<String,Integer> url_maps = new HashMap<>();
     NotificationChannel mChannel;
     NotificationManager notifManager;
-    DatabaseReference databaseReference,reference;
-    private ArrayList<String> ImagesArray = new ArrayList<>();
+    DatabaseReference databaseReference;
     ProgressBar prog;
+    ImageView hideimg;
+    PagerIndicator pagerIndicator;
     private static final int REQUEST_CODE = 1234;
     TextView useremail;
     EditText search;
-//    List<FireModel> listhome=new ArrayList<>();
-//    List<FireModel> listbooks=new ArrayList<>();
-//    List<FireModel> listcycle=new ArrayList<>();
-//    List<FireModel> listmobile=new ArrayList<>();
-//    List<FireModel> listelectronics=new ArrayList<>();
     public static List<String> listwish=new ArrayList<>();
-//    RecyclerView recycle;
-    int j,homecat=1;
+    int homecat=1;
     int fblog=0;
     int tunreadmsg=0;
     private int oldScrollYPostion = 0;
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(base);
-    }
-
 
     @SuppressLint("CutPasteId")
     @Override
@@ -144,10 +131,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         electronics=findViewById(R.id.electronics);
         mobile=findViewById(R.id.mobile);
         cycle=findViewById(R.id.cycle);
-
         book=findViewById(R.id.books);
         sell=findViewById(R.id.sell);
         homel=findViewById(R.id.homel);
+        hideimg=findViewById(R.id.hideimg);
         prog=findViewById(R.id.progbar);
         bookl=findViewById(R.id.bookl);
         cyclel=findViewById(R.id.cyclel);
@@ -163,16 +150,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         wishlist=findViewById(R.id.wishlist);
         voices=findViewById(R.id.voice);
         MyScrollView=findViewById(R.id.horizontalScrollView);
-        sliderLayout=findViewById(R.id.homeSliderLayout);
         scrollView=findViewById(R.id.scrollView2);
+        mDemoSlider =findViewById(R.id.slider);
+        pagerIndicator =  findViewById(R.id.banner);
 
-//        recyclerAdapter = new RecyclerAdapter(listhome,Activity3.this);
-//        recyclerAdapterbooks = new RecyclerAdapter(listbooks,Activity3.this);
-//        recyclerAdaptermobile = new RecyclerAdapter(listmobile,Activity3.this);
-//        recyclerAdaptercycle = new RecyclerAdapter(listcycle,Activity3.this);
-//        recyclerAdapterelect = new RecyclerAdapter(listelectronics,Activity3.this);
+        hideimg.setVisibility(View.VISIBLE);
 
         ImagesfromDatabase();
+
         search.setText("");
 
         if(fuser!=null)
@@ -478,28 +463,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void ImagesfromDatabase(){
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("SlidingImages");
+        url_maps.put("1", R.drawable.profback);
+        url_maps.put("2", R.drawable.profback);
+        url_maps.put("3", R.drawable.drawerback);
+        url_maps.put("4", R.drawable.profback);
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                   ImagesArray.add(dataSnapshot1.getValue(String.class));
-                }
-
-                setUpSliderLayout();
-                prog.setVisibility(View.GONE);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                prog.setVisibility(View.GONE);
-            }
-        });
-
+        setUpSliderLayout();
     }
 
     public void linkaccount() {
@@ -1312,37 +1281,57 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume() {
         super.onResume();
-        sliderLayout.startAutoCycle(4000, 4000, true);
-
         MyApplication.getInstance().setConnectivityListener(this);
+
+       mDemoSlider.startAutoCycle();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sliderLayout.stopAutoCycle();
+        mDemoSlider.stopAutoCycle();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDemoSlider.stopAutoCycle();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        this.finish();
+        return true;
     }
 
 
     private void setUpSliderLayout() {
 
-        for(int i=0;i<ImagesArray.size();i++){
+        for(String name : url_maps.keySet()){
 
-            TextSliderView sliderpic = new TextSliderView(getApplicationContext());
-            sliderpic.image(ImagesArray.get(i));
-            sliderpic.description("");
-            //sliderpic.setOnSliderClickListener(slider -> Activity);
+            DefaultSliderView defaultSliderView = new DefaultSliderView(getApplicationContext());
 
-            sliderLayout.addSlider(sliderpic);
+            defaultSliderView
+                    .image(url_maps.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit);
 
+            mDemoSlider.addSlider(defaultSliderView);
+            mDemoSlider.setCustomIndicator(pagerIndicator);
         }
+        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
+        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        //mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+        mDemoSlider.setDuration(6000);
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                hideimg.setVisibility(View.GONE);
+            }
+        }, 200);
 
-        sliderLayout.setPresetTransformer(SliderLayout.Transformer.ZoomOut);
-        sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        sliderLayout.setDuration(4000);
-        sliderLayout.setVisibility(View.GONE);
     }
 
 

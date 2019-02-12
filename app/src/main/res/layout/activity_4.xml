@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:background="#FFFFFF"
@@ -392,21 +393,64 @@
                                 android:theme="@style/ProgressBarStyle"
                                 android:visibility="gone" />
 
-                            <android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                xmlns:app="http://schemas.android.com/apk/res-auto"
-                                xmlns:tools="http://schemas.android.com/tools"
+                            <android.support.percent.PercentRelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 >
 
-                            <com.daimajia.slider.library.SliderLayout
-                                android:id="@+id/homeSliderLayout"
-                                android:layout_width="match_parent"
-                                android:transitionName="event_image"
-                                app:layout_heightPercent="32%"
-                                />
+                                <com.daimajia.slider.library.SliderLayout
+                                    android:id="@+id/slider"
+                                    android:layout_width="match_parent"
+                                    android:transitionName="event_image"
+                                    android:background="#ede7f6"
+                                    app:layout_heightPercent="36%" />
+
+                                <ImageView
+                                    android:id="@+id/hideimg"
+                                    android:layout_width="match_parent"
+                                    android:background="#ede7f6"
+                                    app:layout_heightPercent="36%"
+                                    />
+
+                                <com.daimajia.slider.library.Indicators.PagerIndicator
+                                    android:id="@+id/banner"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    app:selected_color="@color/white"
+                                    app:unselected_color="#696969"
+                                    android:gravity="bottom"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@null"
+                                     />
 
                             </android.support.percent.PercentRelativeLayout>
+
+                            <android.support.constraint.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="325dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:background="#ffebee"
+                                    android:layout_height="300dp"
+                                    />
+
+                                <android.support.v7.widget.CardView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    card_view:cardCornerRadius="6dp"
+                                    android:elevation="5dp">
+
+                                </android.support.v7.widget.CardView>
+
+
+                            </android.support.constraint.ConstraintLayout>
+
                             <!--<android.support.v7.widget.RecyclerView-->
                                 <!--android:id="@+id/recycle"-->
                                 <!--android:layout_width="match_parent"-->
