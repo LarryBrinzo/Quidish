@@ -10,4 +10,5 @@
     <string name="fb_login_protocol_scheme">fb342953196527149</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_get_users_location">Map</string>
 </resources>

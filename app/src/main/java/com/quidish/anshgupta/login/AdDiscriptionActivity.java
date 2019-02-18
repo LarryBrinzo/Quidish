@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.Messaging.MessageActivity;
 import com.quidish.anshgupta.login.MyAdsAndUserProfile.UserProfile;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class AdDiscriptionActivity extends AppCompatActivity {
@@ -55,6 +58,7 @@ public class AdDiscriptionActivity extends AppCompatActivity {
     String uname;
     String userid,msgad_no,soldno,uid;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +140,7 @@ public class AdDiscriptionActivity extends AppCompatActivity {
                 condition.setText(bundle.getString("condition"));
                 email.setText(bundle.getString("email"));
                 username.setText(bundle.getString("name"));
-                profile.setText((bundle.getString("name")).substring(0,1));
+                profile.setText((Objects.requireNonNull(bundle.getString("name"))).substring(0,1));
                 des_layout.setText(bundle.getString("addetails"));
                 pic1=bundle.getString("pic1");
                 uname=bundle.getString("name");

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +17,8 @@ import com.daimajia.slider.library.Indicators.PagerIndicator;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.google.firebase.database.Query;
+import com.quidish.anshgupta.login.AdModel;
 import com.quidish.anshgupta.login.PostYourAd.CategoryActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
@@ -29,7 +30,6 @@ import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
 import com.quidish.anshgupta.login.MyAccount.MyaccountActivity;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
 import com.quidish.anshgupta.login.R;
-
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
@@ -42,6 +42,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.util.DiffUtil;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.style.TextAppearanceSpan;
 import android.view.Menu;
@@ -49,12 +54,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.facebook.Profile;
@@ -68,47 +71,52 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-
+import static java.lang.Math.max;
 
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
-    LinearLayout homel,bookl,cyclel,mobilel,electronicsl;
     FirebaseAuth myfba;
     DrawerLayout drawer;
     TextView home,electronics,mobile,cycle,book;
     ImageButton drawtog,wishlist,voices;
     private SliderLayout mDemoSlider;
     FloatingActionButton sell;
+    ValueEventListener eventListener;
     String userid,mapdate,userclg="0";
     FirebaseDatabase firebaseDatabase;
-    View homeline,bookline,cycleline,mobileline,electronicsline;
     NavigationView navigationView;
-    StorageReference mstoragrref;
-    HorizontalScrollView MyScrollView;
     NestedScrollView scrollView;
     FirebaseUser fuser;
     HashMap<String,Integer> url_maps = new HashMap<>();
     NotificationChannel mChannel;
     NotificationManager notifManager;
     DatabaseReference databaseReference;
-    ProgressBar prog;
     ImageView hideimg;
+    LinearLayout location;
     PagerIndicator pagerIndicator;
     private static final int REQUEST_CODE = 1234;
     TextView useremail;
+    List<AdModel> listBooks=new ArrayList<>();
+    List<AdModel> listAll=new ArrayList<>();
     EditText search;
     public static List<String> listwish=new ArrayList<>();
-    int homecat=1;
     int fblog=0;
-    int tunreadmsg=0;
+    int sclrct=0,notify=0;
+    int tunreadmsg=0,scroll=1;
+    ProgressBar progbar;
     private int oldScrollYPostion = 0;
+    RecyclerView recycle,horzontalrecycle;
+    long adcount=0,adstart,adend,itm=0;
+    UserAdsAdapter recyclerAdapterAll;
+    CategoryAdapter recyclerAdapterBooks;
+
+
 
     @SuppressLint("CutPasteId")
     @Override
@@ -123,42 +131,69 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         firebaseDatabase = FirebaseDatabase.getInstance();
         myfba=FirebaseAuth.getInstance();
         fuser = myfba.getCurrentUser();
-        //recycle =findViewById(R.id.recycle);
+        recycle =findViewById(R.id.recycle);
 
-        //recycle.setNestedScrollingEnabled(false);
+        recycle.setNestedScrollingEnabled(false);
 
         home=findViewById(R.id.home);
-        electronics=findViewById(R.id.electronics);
         mobile=findViewById(R.id.mobile);
-        cycle=findViewById(R.id.cycle);
-        book=findViewById(R.id.books);
         sell=findViewById(R.id.sell);
-        homel=findViewById(R.id.homel);
         hideimg=findViewById(R.id.hideimg);
-        prog=findViewById(R.id.progbar);
-        bookl=findViewById(R.id.bookl);
-        cyclel=findViewById(R.id.cyclel);
-        mobilel=findViewById(R.id.mobilel);
-        electronicsl=findViewById(R.id.electronicsl);
-        homeline=findViewById(R.id.homeline);
-        bookline=findViewById(R.id.bookline);
-        cycleline=findViewById(R.id.cycleline);
-        mobileline=findViewById(R.id.mobileline);
-        electronicsline=findViewById(R.id.electronicsline);
         search=findViewById(R.id.search);
         drawtog=findViewById(R.id.drawtog);
+        location=findViewById(R.id.location);
         wishlist=findViewById(R.id.wishlist);
         voices=findViewById(R.id.voice);
-        MyScrollView=findViewById(R.id.horizontalScrollView);
         scrollView=findViewById(R.id.scrollView2);
         mDemoSlider =findViewById(R.id.slider);
         pagerIndicator =  findViewById(R.id.banner);
+        progbar=findViewById(R.id.prog);
+        horzontalrecycle=findViewById(R.id.horzontalrecycle);
+
+        recyclerAdapterAll = new UserAdsAdapter(listAll,HomeActivity.this);
+        RecyclerView.LayoutManager recyceAll = new GridLayoutManager(HomeActivity.this,2);
+        recycle.setLayoutManager(recyceAll);
+        recyceAll.setAutoMeasureEnabled(false);
+        recycle.setItemAnimator( new DefaultItemAnimator());
+        recycle.setAdapter(recyclerAdapterAll);
+
+        recyclerAdapterBooks = new CategoryAdapter(listBooks,HomeActivity.this);
+        RecyclerView.LayoutManager recycebooks = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        horzontalrecycle.setLayoutManager(recycebooks);
+        horzontalrecycle.setLayoutManager(recycebooks);
+        horzontalrecycle.setAdapter(recyclerAdapterBooks);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                adcount=dataSnapshot.getChildrenCount();
+                adstart=adcount-1;
+                adend=max(adstart-29,1);
+                userwish();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
 
         hideimg.setVisibility(View.VISIBLE);
 
         ImagesfromDatabase();
 
         search.setText("");
+
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(getApplicationContext(),GetUsersLocationActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
         if(fuser!=null)
         {
@@ -173,10 +208,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         Profile profile = Profile.getCurrentProfile().getCurrentProfile();
         if (profile != null) {
-           fblog=1;
+            fblog=1;
         }
-
-        mstoragrref= FirebaseStorage.getInstance().getReference();
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
@@ -189,7 +222,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 oldScrollYPostion = scrollView.getScrollY();
             }
         });
-
 
 
         navigationView=findViewById(R.id.nav_view);
@@ -229,16 +261,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         useremail.setText(s);
 
         linkaccount();
-       // progressDialog.dismiss();
-        prog.setVisibility(View.GONE);
-
 
         if(fuser!=null) {
 
             databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Allmsg");
 
-            ValueEventListener valueEventListener;
-            valueEventListener = databaseReference.addValueEventListener(new ValueEventListener() {
+            databaseReference.addValueEventListener(new ValueEventListener() {
                 @SuppressLint("WrongConstant")
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -331,13 +359,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             });
         }
 
-        intializelay();
 
         headview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                prog.setVisibility(View.GONE);
                 if(fuser!=null)
                 {
                     Intent intent=new Intent(getApplicationContext(),MyaccountActivity.class);
@@ -363,27 +389,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
 
         sell.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+            @Override
+            public void onClick(View view) {
 
-                        prog.setVisibility(View.GONE);
-                        if(fuser==null)
-                        {
-                            Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                            startActivity(intent);
-                        }
+                if(fuser==null)
+                {
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
+                }
 
-                        else{
-                        Intent intent=new Intent(getApplicationContext(),CategoryActivity.class);
-                        startActivity(intent);
-                        }
-                    }
-                });
+                else{
+                    Intent intent=new Intent(getApplicationContext(),CategoryActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
 
         drawtog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                prog.setVisibility(View.GONE);
                 drawer.openDrawer(GravityCompat.START);
             }
         });
@@ -391,12 +415,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         wishlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
+
                 if(fuser!=null)
                 {
-                   // progressDialog.dismiss();
-                    prog.setVisibility(View.GONE);
                     Intent intent=new Intent(getApplicationContext(),MyWishlistActivity.class);
                     startActivity(intent);
                 }
@@ -412,8 +433,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         voices.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
+
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice searching...");
@@ -424,21 +444,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
+
                 Intent intent=new Intent(getApplicationContext(),CompleteSearchActivity.class);
                 intent.putExtra("active", "0");
                 startActivity(intent);
             }
         });
-
-
-
-
-
-       // userwish();
-
-
 
     }
 
@@ -473,11 +484,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     public void linkaccount() {
 
-        prog.setVisibility(View.VISIBLE);
-
         if(fuser==null)
         {
-            prog.setVisibility(View.GONE);
             return;
         }
 
@@ -498,14 +506,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 userclg=dataSnapshot.child("users").child(userid).child("institute").getValue(String.class);
 
-                prog.setVisibility(View.GONE);
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                prog.setVisibility(View.GONE);
             }
         });
 
@@ -524,172 +529,34 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         {
             if(fuser!=null){
 
-            Calendar calendar = Calendar.getInstance();
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat mdformat = new SimpleDateFormat("hh:mm:ss");
-            String strDate =mdformat.format(calendar.getTime());
+                Calendar calendar = Calendar.getInstance();
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat mdformat = new SimpleDateFormat("hh:mm:ss");
+                String strDate =mdformat.format(calendar.getTime());
 
-            if (calendar.get(Calendar.AM_PM) == 0) {
-                strDate+=" AM";
-            } else {
-                strDate+=" PM";
+                if (calendar.get(Calendar.AM_PM) == 0) {
+                    strDate+=" AM";
+                } else {
+                    strDate+=" PM";
+                }
+
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                String date = df.format(Calendar.getInstance().getTime());
+
+                date+=" ";
+                date+=strDate;
+
+                mapdate=date;
+
+                DatabaseReference current_user;
+                current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("lastseen");
+                current_user.setValue(mapdate);
+
             }
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            String date = df.format(Calendar.getInstance().getTime());
-
-            date+=" ";
-            date+=strDate;
-
-            mapdate=date;
-
-            DatabaseReference current_user;
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("lastseen");
-            current_user.setValue(mapdate);
-
-            }
-
-                    finishAffinity();
+            finishAffinity();
         }
     }
 
-    public void homelist(){
-        homecat=1;
-
-        prog.setVisibility(View.VISIBLE);
-
-        mobileline.setVisibility(View.GONE);
-        electronicsline.setVisibility(View.GONE);
-        homeline.setVisibility(View.VISIBLE);
-        bookline.setVisibility(View.GONE);
-        cycleline.setVisibility(View.GONE);
-
-        home.setTextColor(Color.WHITE);
-        mobile.setTextColor(Color.rgb(132,141,150));
-        electronics.setTextColor(Color.rgb(132,141,150));
-        cycle.setTextColor(Color.rgb(132,141,150));
-        book.setTextColor(Color.rgb(132,141,150));
-
-       // Adshowhome();
-    }
-
-    public void booklist(){
-        homecat=2;
-
-        prog.setVisibility(View.VISIBLE);
-
-        mobileline.setVisibility(View.GONE);
-        electronicsline.setVisibility(View.GONE);
-        homeline.setVisibility(View.GONE);
-        bookline.setVisibility(View.VISIBLE);
-        cycleline.setVisibility(View.GONE);
-
-        book.setTextColor(Color.WHITE);
-        mobile.setTextColor(Color.rgb(132,141,150));
-        electronics.setTextColor(Color.rgb(132,141,150));
-        cycle.setTextColor(Color.rgb(132,141,150));
-        home.setTextColor(Color.rgb(132,141,150));
-
-       // Adshowbooks();
-    }
-
-    public void cyclelist(){
-
-        homecat=3;
-
-        prog.setVisibility(View.VISIBLE);
-
-        mobileline.setVisibility(View.GONE);
-        electronicsline.setVisibility(View.GONE);
-        homeline.setVisibility(View.GONE);
-        bookline.setVisibility(View.GONE);
-        cycleline.setVisibility(View.VISIBLE);
-
-        cycle.setTextColor(Color.WHITE);
-        mobile.setTextColor(Color.rgb(132,141,150));
-        electronics.setTextColor(Color.rgb(132,141,150));
-        home.setTextColor(Color.rgb(132,141,150));
-        book.setTextColor(Color.rgb(132,141,150));
-
-       // Adshowcycle();
-    }
-
-    public void mobilelist(){
-        homecat=4;
-
-        prog.setVisibility(View.VISIBLE);
-
-        mobileline.setVisibility(View.VISIBLE);
-        electronicsline.setVisibility(View.GONE);
-        homeline.setVisibility(View.GONE);
-        bookline.setVisibility(View.GONE);
-        cycleline.setVisibility(View.GONE);
-
-        mobile.setTextColor(Color.WHITE);
-        home.setTextColor(Color.rgb(132,141,150));
-        electronics.setTextColor(Color.rgb(132,141,150));
-        cycle.setTextColor(Color.rgb(132,141,150));
-        book.setTextColor(Color.rgb(132,141,150));
-       // Adshowmobile();
-    }
-
-    public void electronicslist(){
-        homecat=5;
-
-        prog.setVisibility(View.VISIBLE);
-
-        mobileline.setVisibility(View.GONE);
-        electronicsline.setVisibility(View.VISIBLE);
-        homeline.setVisibility(View.GONE);
-        bookline.setVisibility(View.GONE);
-        cycleline.setVisibility(View.GONE);
-
-        electronics.setTextColor(Color.WHITE);
-        mobile.setTextColor(Color.rgb(132,141,150));
-        home.setTextColor(Color.rgb(132,141,150));
-        cycle.setTextColor(Color.rgb(132,141,150));
-        book.setTextColor(Color.rgb(132,141,150));
-
-
-       // Adshowelectronics();
-    }
-
-    public void intializelay(){
-        homel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               homelist();
-            }
-        });
-
-        bookl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                booklist();
-            }
-        });
-
-        cyclel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cyclelist();
-            }
-        });
-
-        mobile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mobilelist();
-            }
-        });
-
-        electronicsl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                electronicslist();
-            }
-        });
-
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -699,149 +566,89 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case R.id.drawhome:
             {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
-                MyScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyScrollView.fullScroll(HorizontalScrollView.FOCUS_LEFT);
-                    }
-                },100);
-                //progressDialog.setMessage("Loading...");
-                //progressDialog.show();
-                prog.setVisibility(View.VISIBLE);
-                homelist();
+                //homelist();
                 break;
             }
             case R.id.drawbooks:
             {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
-                MyScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyScrollView.fullScroll(HorizontalScrollView.FOCUS_LEFT);
-                    }
-                },100);
-               // progressDialog.setMessage("Loading...");
-                //progressDialog.show();
-                prog.setVisibility(View.VISIBLE);
-                booklist();
+                //booklist();
                 break;}
             case R.id.drawcycle:
             {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
-                MyScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyScrollView.fullScroll(HorizontalScrollView.FOCUS_LEFT);
-                    }
-                },100);
-                //progressDialog.setMessage("Loading...");
-                //progressDialog.show();
-                prog.setVisibility(View.VISIBLE);
-                cyclelist();
+                //cyclelist();
                 break;}
             case R.id.drawmobile:
             {
-               // progressDialog.dismiss();
-                prog.setVisibility(View.GONE);
-                MyScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-                    }
-                },100);
-               // progressDialog.setMessage("Loading...");
-                //progressDialog.show();
-                prog.setVisibility(View.VISIBLE);
-                mobilelist();
+                //mobilelist();
                 break;}
             case R.id.drawelec:
             {
-                prog.setVisibility(View.GONE);
-                MyScrollView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-                    }
-                },100);
-                prog.setVisibility(View.VISIBLE);
-                electronicslist();
+                //electronicslist();
                 break;}
             case R.id.drawwish:
             {
-                prog.setVisibility(View.GONE);
-
-                 if(fuser!=null)
-                 {
-                             Intent intent=new Intent(getApplicationContext(),MyWishlistActivity.class);
-                             startActivity(intent);
-                 }
-
-               else
+                if(fuser!=null)
                 {
-                            Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),MyWishlistActivity.class);
+                    startActivity(intent);
+                }
+
+                else
+                {
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
 
                 }
 
-                prog.setVisibility(View.GONE);
                 break;
             }
             case R.id.drawmyad:
             {
-                prog.setVisibility(View.GONE);
 
                 if(fuser!=null)
                 {
-                            Intent intent=new Intent(getApplicationContext(),MyAdsActivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),MyAdsActivity.class);
+                    startActivity(intent);
                 }
 
                 else
                 {
-                            Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
                 }
-                prog.setVisibility(View.GONE);
 
-            break;
+                break;
             }
 
             case R.id.chat:
             {
-                prog.setVisibility(View.GONE);
 
                 if(fuser!=null)
                 {
-                            Intent intent=new Intent(getApplicationContext(),MyChatActivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),MyChatActivity.class);
+                    startActivity(intent);
                 }
 
                 else
                 {
-                            Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
                 }
-                prog.setVisibility(View.GONE);
                 break;
             }
 
             case R.id.drawacc:
             {
-                prog.setVisibility(View.GONE);
                 if(fuser!=null)
                 {
-                            Intent intent=new Intent(getApplicationContext(),MyaccountActivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),MyaccountActivity.class);
+                    startActivity(intent);
                 }
 
                 else
                 {
-                            Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                            startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
                 }
                 break;
             }
@@ -871,7 +678,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             .setCancelable(false)
                             .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    prog.setVisibility(View.VISIBLE);
 
                                     myfba.signOut();
                                     if(fblog==1)
@@ -911,27 +717,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                         }
                                     }, 50);
 
-                                    prog.setVisibility(View.GONE);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    prog.setVisibility(View.GONE);
                                 }
                             });
                     AlertDialog alert = builder.create();
                     alert.show();
 
-                  break;
+                    break;
                 }
 
                 else
                 {
-                            NavigationView navigation =findViewById(R.id.nav_view);
-                            Menu nav_Menu = navigation.getMenu();
-                            nav_Menu.findItem(R.id.drawlogout).setVisible(false);
-                            Toast.makeText(getApplicationContext(),"You are not Logged in",Toast.LENGTH_LONG).show();
-                    prog.setVisibility(View.GONE);
+                    NavigationView navigation =findViewById(R.id.nav_view);
+                    Menu nav_Menu = navigation.getMenu();
+                    nav_Menu.findItem(R.id.drawlogout).setVisible(false);
+                    Toast.makeText(getApplicationContext(),"You are not Logged in",Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -959,160 +762,292 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-//    public void addproductad(){
-//
-//        databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
-//
-//        databaseReference.addValueEventListener(new ValueEventListener() {
+    public void addproductad(final long start, final long end){
+
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
+
+//         childListener=databaseReference.addChildEventListener(new ChildEventListener() {
 //            @Override
-//            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //
-//               //int item=0;
+//                String ad_no=dataSnapshot.getKey();
 //
-//                j=listwish.size();
+//                String adinst = dataSnapshot.child("institute").getValue(String.class);
+//                String adsold = dataSnapshot.child("sold").getValue(String.class);
+//                String usid = dataSnapshot.child("userid").getValue(String.class);
 //
-////                listhome.clear();
-////                listelectronics.clear();
-////                listmobile.clear();
-////                listcycle.clear();
-////                listbooks.clear();
+//                if (adsold == null || adsold.equals("1")){}
 //
+//                else if (fuser != null) {
+//                    if (userid.equals(usid)){}
+//                }
 //
-//                   final Handler handler = new Handler();
-//                   handler.postDelayed(new Runnable() {
-//                       @Override
-//                       public void run() {
-//                           for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()) {
+//                else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst)) {}
 //
-//                               String wish_no = "0";
-//                               //item++;
+//                else{
 //
-//                               if (j > 0)
-//                                   wish_no = listwish.get(j - 1);
+//                    itm++;
 //
-//                               String ad_no=dataSnapshot1.getKey();
+//                    if(itm>=20)
+//                    {
+//                        FirebaseDatabase.getInstance().getReference().child("Ads").removeEventListener(childListener);
+//                        itm=0;
+//                    }
 //
-//                               String adinst = dataSnapshot1.child("institute").getValue(String.class);
-//                               String adsold = dataSnapshot1.child("sold").getValue(String.class);
-//                               String usid = dataSnapshot1.child("userid").getValue(String.class);
+//                    String adtitle = dataSnapshot.child("ad_title").getValue(String.class);
+//                    String model = dataSnapshot.child("model").getValue(String.class);
+//                    String include = dataSnapshot.child("includes").getValue(String.class);
+//                    String year = dataSnapshot.child("year").getValue(String.class);
+//                    String condition = dataSnapshot.child("condition").getValue(String.class);
+//                    String addetails = dataSnapshot.child("ad_details").getValue(String.class);
+//                    String price = dataSnapshot.child("price").getValue(String.class);
+//                    String address = dataSnapshot.child("address").getValue(String.class);
+//                    String brand = dataSnapshot.child("brand").getValue(String.class);
+//                    String email = dataSnapshot.child("email_id").getValue(String.class);
+//                    String mobile = dataSnapshot.child("mobile").getValue(String.class);
+//                    String name = dataSnapshot.child("name").getValue(String.class);
+//                    String image1 = dataSnapshot.child("image1").getValue(String.class);
+//                    String image2 = dataSnapshot.child("image2").getValue(String.class);
+//                    String image3 = dataSnapshot.child("image3").getValue(String.class);
+//                    String image4 = dataSnapshot.child("image4").getValue(String.class);
 //
-//                               if (adsold == null || adsold.equals("1"))
-//                                   continue;
+//                    price = "₹ " + price;
 //
-//                               if (fuser != null) {
-//                                   if (userid.equals(usid))
-//                                       continue;
-//                               }
+//                    AdModel fire = new AdModel();
 //
-//                               if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
-//                                   continue;
+//                    fire.setPrice(price);
+//                    fire.setTitle(adtitle);
+//                    fire.setModel(model);
+//                    fire.setIncludes(include);
+//                    fire.setYear(year);
+//                    fire.setCondition(condition);
+//                    fire.setDetails(addetails);
+//                    fire.setAddress(address);
+//                    fire.setBrand(brand);
+//                    fire.setEmail(email);
+//                    fire.setMobile(mobile);
+//                    fire.setName(name);
+//                    fire.setUrl1(image1);
+//                    fire.setUrl2(image2);
+//                    fire.setUrl3(image3);
+//                    fire.setUrl4(image4);
+//                    fire.setAdno(ad_no);
+//                    fire.setActivity("2");
+//                    fire.setSold("0");
+//                    fire.setUser(usid);
+//                    fire.setWish("0");
 //
-////                 DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(ad_no).child("posted");
-////                 current_user.setValue("1");
+//                    listhome2.add(0,fire);
+//                    if(listhome2.size()==1){
+//                        recyclerAdapterbooks.notifyDataSetChanged();
+//                    } else {
 //
-//                               String adtitle = dataSnapshot1.child("ad_title").getValue(String.class);
-//                               String model = dataSnapshot1.child("model").getValue(String.class);
-//                               String include = dataSnapshot1.child("includes").getValue(String.class);
-//                               String year = dataSnapshot1.child("year").getValue(String.class);
-//                               String condition = dataSnapshot1.child("condition").getValue(String.class);
-//                               String addetails = dataSnapshot1.child("ad_details").getValue(String.class);
-//                               String price = dataSnapshot1.child("price").getValue(String.class);
-//                               String category = dataSnapshot1.child("category").getValue(String.class);
-//                               String address = dataSnapshot1.child("address").getValue(String.class);
-//                               String brand = dataSnapshot1.child("brand").getValue(String.class);
-//                               String email = dataSnapshot1.child("email_id").getValue(String.class);
-//                               String mobile = dataSnapshot1.child("mobile").getValue(String.class);
-//                               String name = dataSnapshot1.child("name").getValue(String.class);
-//                               String image1 = dataSnapshot1.child("image1").getValue(String.class);
-//                               String image2 = dataSnapshot1.child("image2").getValue(String.class);
-//                               String image3 = dataSnapshot1.child("image3").getValue(String.class);
-//                               String image4 = dataSnapshot1.child("image4").getValue(String.class);
+//                        recyclerAdapterbooks.notifyItemInserted(0);
 //
-//                               price = "₹ " + price;
+//                    }
 //
-//                               FireModel fire = new FireModel();
+//                    //recyclerAdapterbooks.notifyItemInserted(listhome2.size() - 1);
+//                    Adshowbooks();
+//                }
 //
-//                               fire.setPrice(price);
-//                               fire.setTitle(adtitle);
-//                               fire.setModel(model);
-//                               fire.setIncludes(include);
-//                               fire.setYear(year);
-//                               fire.setCondition(condition);
-//                               fire.setDetails(addetails);
-//                               fire.setAddress(address);
-//                               fire.setBrand(brand);
-//                               fire.setEmail(email);
-//                               fire.setMobile(mobile);
-//                               fire.setName(name);
-//                               fire.setUrl1(image1);
-//                               fire.setUrl2(image2);
-//                               fire.setUrl3(image3);
-//                               fire.setUrl4(image4);
-//                               fire.setAdno(ad_no);
-//                               fire.setActivity("2");
-//                               fire.setSold("0");
-//                               fire.setUser(usid);
+//            }
 //
-//                               if (wish_no.equals(ad_no) && j > 0) {
-//                                   j--;
-//                                   fire.setWish("1");
-//                               } else
-//                                   fire.setWish("0");
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //
-//                               listhome.add(0,fire);
+//            }
 //
-//                               prog.setVisibility(View.GONE);
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 //
-//                               assert category != null;
-//                               switch (category) {
-//                                   case "   Cycle":
-//                                       listcycle.add(0,fire);
-//                                       break;
-//                                   case "   Books & Stationery":
-//                                       listbooks.add(0,fire);
-//                                       break;
-//                                   case "   Mobile & Tablets":
-//                                       listmobile.add(0,fire);
-//                                       break;
-//                                   case "   Electronics & Appliances":
-//                                       listelectronics.add(0,fire);
-//                                       break;
-//                               }
+//            }
 //
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 //
-//                           }
-//                       }
-//                   }, 2000);
-//
-//
-//               if(homecat==1)
-//                   Adshowhome();
-//               else if(homecat==2)
-//                   Adshowbooks();
-//               else if(homecat==3)
-//                   Adshowcycle();
-//               else if(homecat==4)
-//                   Adshowmobile();
-//               else if(homecat==5)
-//                   Adshowelectronics();
-//
-// }
+//            }
 //
 //            @Override
 //            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                prog.setVisibility(View.GONE);
+//
 //            }
 //        });
-//
-//}
-//
+         databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
+                for(long i=start;i>=end;i--) {
+
+                    String ad_no=Long.toString(i);
+
+                    itm++;
+
+                    String adinst = dataSnapshot.child(ad_no).child("institute").getValue(String.class);
+                    String adsold = dataSnapshot.child(ad_no).child("sold").getValue(String.class);
+                    String usid = dataSnapshot.child(ad_no).child("userid").getValue(String.class);
+
+                    if (adsold == null || adsold.equals("1"))
+                        continue;
+
+                    else if (fuser != null) {
+                        if (userid.equals(usid))
+                            continue;
+                    }
+
+                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
+                        continue;
+//                 DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(ad_no).child("posted");
+//                 current_user.setValue("1");
+                    else{
+                    String adtitle = dataSnapshot.child(ad_no).child("ad_title").getValue(String.class);
+                    String model = dataSnapshot.child(ad_no).child("model").getValue(String.class);
+                    String include = dataSnapshot.child(ad_no).child("includes").getValue(String.class);
+                    String year = dataSnapshot.child(ad_no).child("year").getValue(String.class);
+                    String condition = dataSnapshot.child(ad_no).child("condition").getValue(String.class);
+                    String addetails = dataSnapshot.child(ad_no).child("ad_details").getValue(String.class);
+                    String price = dataSnapshot.child(ad_no).child("price").getValue(String.class);
+                    String address = dataSnapshot.child(ad_no).child("address").getValue(String.class);
+                    String brand = dataSnapshot.child(ad_no).child("brand").getValue(String.class);
+                    String email = dataSnapshot.child(ad_no).child("email_id").getValue(String.class);
+                    String mobile = dataSnapshot.child(ad_no).child("mobile").getValue(String.class);
+                    String name = dataSnapshot.child(ad_no).child("name").getValue(String.class);
+                    String image1 = dataSnapshot.child(ad_no).child("image1").getValue(String.class);
+                    String image2 = dataSnapshot.child(ad_no).child("image2").getValue(String.class);
+                    String image3 = dataSnapshot.child(ad_no).child("image3").getValue(String.class);
+                    String image4 = dataSnapshot.child(ad_no).child("image4").getValue(String.class);
+
+                    price = "₹ " + price;
+
+                    AdModel fire = new AdModel();
+
+                    fire.setPrice(price);
+                    fire.setTitle(adtitle);
+                    fire.setModel(model);
+                    fire.setIncludes(include);
+                    fire.setYear(year);
+                    fire.setCondition(condition);
+                    fire.setDetails(addetails);
+                    fire.setAddress(address);
+                    fire.setBrand(brand);
+                    fire.setEmail(email);
+                    fire.setMobile(mobile);
+                    fire.setName(name);
+                    fire.setUrl1(image1);
+                    fire.setUrl2(image2);
+                    fire.setUrl3(image3);
+                    fire.setUrl4(image4);
+                    fire.setAdno(ad_no);
+                    fire.setActivity("2");
+                    fire.setSold("0");
+                    fire.setUser(usid);
+
+                    if(listwish.contains(ad_no))
+                        fire.setWish("1");
+
+                    else
+                        fire.setWish("0");
+
+                        listAll.add(fire);
+
+                    if(notify==1)
+                        recyclerAdapterAll.notifyItemInserted(listAll.size() - 1);
+
+                    }
+                }
+
+                adstart=adend;
+                sclrct=1;
+                scroll=1;
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+    }
+
+
+
+    public void Adtraversal(){
+
+        progbar.setVisibility(View.VISIBLE);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adend=max(adstart-49,1);
+                addproductad(adstart,adend);
+                progbar.setVisibility(View.GONE);
+            }
+        }, 2000);
+
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView
+                        .getScrollY()));
+
+                if (diff == 0 && sclrct==1 && itm<adcount && scroll==1) {
+
+                    scroll=0;
+                    notify=1;
+
+                    progbar.setVisibility(View.VISIBLE);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            adend=max(adstart-25,1);
+                            addproductad(adstart,adend);
+
+                            progbar.setVisibility(View.GONE);
+                        }
+                    }, 1000);
+                }
+            }
+        });
+
+
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                if (scrollY > oldScrollY) {
+                    //Scroll DOWN
+                }
+                else if (scrollY < oldScrollY) {
+                    if (sclrct==1 && itm<adcount && scroll==0) {
+                        notify=0;
+                    }
+                }
+
+                if (scrollY == 0) {
+                    //TOP SCROLL
+                }
+
+                if (scrollY == ( v.getMeasuredHeight() - v.getChildAt(0).getMeasuredHeight() )) {
+                   //BOTTOM SCROLL
+                }
+            }
+        });
+
+    }
+
 //    public void Adshowhome(){
-//       // recycle.removeAllViewsInLayout();
+//        // recycle.removeAllViewsInLayout();
 //
-//        RecyclerView.LayoutManager recyce = new GridLayoutManager(Activity3.this,1);
+//        UserAdsAdapter recyclerAdapter = new UserAdsAdapter(listhome,HomeActivity.this);
+//        RecyclerView.LayoutManager recyce = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
 //        recycle.setLayoutManager(recyce);
 //        //recyce.setAutoMeasureEnabled(false);
-//        recycle.setItemAnimator( new DefaultItemAnimator());
+    //nnerRv.setRecycledViewPool(mSharedPool);
+//        recycle.setLayoutManager(recyce);
 //        recycle.setAdapter(recyclerAdapter);
 //
 //        prog.setVisibility(View.GONE);
@@ -1121,7 +1056,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //    public void Adshowbooks(){
 //        //recycle.removeAllViewsInLayout();
 //
-//        RecyclerView.LayoutManager recyce = new GridLayoutManager(Activity3.this,1);
+//        // recyclerAdapterbooks = new UserAdsAdapter(listhome2,HomeActivity.this);
+//        RecyclerView.LayoutManager recyce = new GridLayoutManager(HomeActivity.this,2);
 //        recycle.setLayoutManager(recyce);
 //        //recyce.setAutoMeasureEnabled(false);
 //        recycle.setItemAnimator( new DefaultItemAnimator());
@@ -1164,41 +1100,140 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //
 //        prog.setVisibility(View.GONE);
 //    }
-//
-//
-//    public void userwish(){
-//
-//        prog.setVisibility(View.VISIBLE);
-//
-//        if(fuser!=null)
-//
-//        {   databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("wish");
-//
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                listwish.clear();
-//                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-//
-//                    String advalue=dataSnapshot1.getValue(String.class);
-//
-//                    listwish.add(advalue);
-//
-//                }
-//                addproductad();
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                prog.setVisibility(View.GONE);
-//            }
-//        });
-//        }
-//
-//        else
-//            addproductad();
-//
-//    }
+
+    public void userwish(){
+
+        if(fuser!=null)
+
+        {   databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("wish");
+
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    listwish.clear();
+                    for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+
+                        String advalue=dataSnapshot1.getValue(String.class);
+
+                        listwish.add(advalue);
+
+                    }
+                    addbooksad();
+                    Adtraversal();
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
+
+        else{
+            addbooksad();
+            Adtraversal();
+        }
+
+    }
+
+
+    public void addbooksad(){
+
+        final DatabaseReference booksreference = FirebaseDatabase.getInstance().getReference().child("Ads");
+        Query query = booksreference.orderByChild("category").equalTo("   Books & Stationery");
+
+        eventListener=query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
+                int bkct=0;
+
+                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()) {
+
+                    String ad_no=dataSnapshot1.getKey();
+
+                    bkct++;
+
+                    if(bkct==6)
+                      booksreference.removeEventListener(eventListener);
+
+                    String adinst = dataSnapshot1.child("institute").getValue(String.class);
+                    String adsold = dataSnapshot1.child("sold").getValue(String.class);
+                    String usid = dataSnapshot1.child("userid").getValue(String.class);
+
+                    if (adsold == null || adsold.equals("1"))
+                        continue;
+
+                    else if (fuser != null) {
+                        if (userid.equals(usid))
+                            continue;
+                    }
+
+                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
+                        continue;
+
+                    else{
+                        String adtitle = dataSnapshot1.child("ad_title").getValue(String.class);
+                        String model = dataSnapshot1.child("model").getValue(String.class);
+                        String include = dataSnapshot1.child("includes").getValue(String.class);
+                        String year = dataSnapshot1.child("year").getValue(String.class);
+                        String condition = dataSnapshot1.child("condition").getValue(String.class);
+                        String addetails = dataSnapshot1.child("ad_details").getValue(String.class);
+                        String price = dataSnapshot1.child("price").getValue(String.class);
+                        String address = dataSnapshot1.child("address").getValue(String.class);
+                        String brand = dataSnapshot1.child("brand").getValue(String.class);
+                        String email = dataSnapshot1.child("email_id").getValue(String.class);
+                        String mobile = dataSnapshot1.child("mobile").getValue(String.class);
+                        String name = dataSnapshot1.child("name").getValue(String.class);
+                        String image1 = dataSnapshot1.child("image1").getValue(String.class);
+                        String image2 = dataSnapshot1.child("image2").getValue(String.class);
+                        String image3 = dataSnapshot1.child("image3").getValue(String.class);
+                        String image4 = dataSnapshot1.child("image4").getValue(String.class);
+
+                        price = "₹ " + price;
+
+                        AdModel fire = new AdModel();
+
+                        fire.setPrice(price);
+                        fire.setTitle(adtitle);
+                        fire.setModel(model);
+                        fire.setIncludes(include);
+                        fire.setYear(year);
+                        fire.setCondition(condition);
+                        fire.setDetails(addetails);
+                        fire.setAddress(address);
+                        fire.setBrand(brand);
+                        fire.setEmail(email);
+                        fire.setMobile(mobile);
+                        fire.setName(name);
+                        fire.setUrl1(image1);
+                        fire.setUrl2(image2);
+                        fire.setUrl3(image3);
+                        fire.setUrl4(image4);
+                        fire.setAdno(ad_no);
+                        fire.setActivity("2");
+                        fire.setSold("0");
+                        fire.setUser(usid);
+
+                        if(listwish.contains(ad_no))
+                            fire.setWish("1");
+
+                        else
+                            fire.setWish("0");
+
+                        listBooks.add(fire);
+                        recyclerAdapterBooks.notifyItemInserted(listAll.size() - 1);
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+    }
 
 
     private void checkConnection() {
@@ -1222,9 +1257,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
-
-
-
 
 //    public void storefinal(int adno){
 //
@@ -1283,7 +1315,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
 
-       mDemoSlider.startAutoCycle();
+        mDemoSlider.startAutoCycle();
 
     }
 
@@ -1321,7 +1353,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Default);
         mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        //mDemoSlider.setCustomAnimation(new DescriptionAnimation());
         mDemoSlider.setDuration(6000);
 
         final Handler handler = new Handler();
@@ -1330,9 +1361,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void run() {
                 hideimg.setVisibility(View.GONE);
             }
-        }, 200);
+        }, 400);
 
     }
-
 
 }

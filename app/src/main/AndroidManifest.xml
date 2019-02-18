@@ -9,12 +9,22 @@
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality. 
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
+        android:hardwareAccelerated="true"
         android:name=".Network.MyApplication"
         android:allowBackup="true"
         android:configChanges="screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
@@ -27,9 +37,9 @@
         android:windowSoftInputMode="stateHidden|adjustResize">
         <activity
             android:name=".IntroScreen.WelcomeActivity"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,65 +53,86 @@
             android:name="android.app.default_searchable"
             android:value=".Activity3" />
 
-        <activity android:name=".LoginRegister.RegisterActivity"
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".LoginRegister.RegisterActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <activity android:name=".LoginRegister.ForgetPass"
+        <activity
+            android:name=".LoginRegister.ForgetPass"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".LoginRegister.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginRegister.LoginActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".PostYourAd.SubCategoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PostYourAd.SubCategoryActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".PostYourAd.AdpostActivity"
+            android:configChanges="orientation"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PostYourAd.CategoryActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".PostYourAd.CategoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAccount.MyaccountActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAccount.MyaccountActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAccount.ProfileDetailsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAccount.ProfileDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginRegister.LoginSignupactivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".LoginRegister.LoginSignupactivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAdsAndUserProfile.MyAdsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAdsAndUserProfile.MyAdsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAccount.MyWishlistActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAccount.MyWishlistActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAdsAndUserProfile.MyAdDiscriptionActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAdsAndUserProfile.MyAdDiscriptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SoldAdDiscriptionActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SoldAdDiscriptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.CompleteSearchActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.CompleteSearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ZoomActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ZoomActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.HomeActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SpashScreenActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SpashScreenActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".Network.ConnectivityReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
@@ -117,8 +148,8 @@
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -130,9 +161,9 @@
         </activity>
         <activity
             android:name=".Messaging.MessageActivity"
-            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".Messaging.MyChatActivity" />
 
         <provider
@@ -145,18 +176,22 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MyAdsAndUserProfile.EditAdActivity"
+        <activity
+            android:name=".MyAdsAndUserProfile.EditAdActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyAdsAndUserProfile.UserProfile"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyAdsAndUserProfile.UserProfile"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".AdDiscriptionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AdDiscriptionActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Home.ContactUsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Home.ContactUsActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <service android:name=".CloudMessaging.MyFirebaseMessagingService">
             <intent-filter>
@@ -169,9 +204,25 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Network.No_InternetActivity"
+        <activity
+            android:name=".Network.No_InternetActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".Home.GetUsersLocationActivity"
+            android:label="@string/title_activity_get_users_location"></activity>
     </application>
 
 </manifest>
