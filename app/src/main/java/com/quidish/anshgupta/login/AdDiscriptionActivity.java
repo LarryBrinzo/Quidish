@@ -56,7 +56,7 @@ public class AdDiscriptionActivity extends AppCompatActivity {
     String wish_no="0";
     DatabaseReference ref;
     String uname;
-    String userid,msgad_no,soldno,uid;
+    String userid,soldno,uid;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -119,47 +119,21 @@ public class AdDiscriptionActivity extends AppCompatActivity {
 
             if (bundle.containsKey("msgad_no"))
             {
-                msgad_no=bundle.getString("msgad_no");
+                ad_no=bundle.getString("msgad_no");
                 progressDialog.setMessage("Loading...");
                 progressDialog.show();
-                ad_no=msgad_no;
                 call.setVisibility(View.GONE);
                 offer.setVisibility(View.GONE);
-                addetailsset();
+                addetailsset(ad_no);
                 wishcheck();
             }
 
             else{
-                adtitle.setText(bundle.getString("adtitle"));
-                price.setText(bundle.getString("price"));
-                address.setText(bundle.getString("address"));
-                brand.setText(bundle.getString("brand"));
-                model.setText(bundle.getString("model"));
-                includes.setText(bundle.getString("includes"));
-                year.setText(bundle.getString("year"));
-                condition.setText(bundle.getString("condition"));
-                email.setText(bundle.getString("email"));
-                username.setText(bundle.getString("name"));
-                profile.setText((Objects.requireNonNull(bundle.getString("name"))).substring(0,1));
-                des_layout.setText(bundle.getString("addetails"));
-                pic1=bundle.getString("pic1");
-                uname=bundle.getString("name");
-                pic2=bundle.getString("pic2");
-                pic3=bundle.getString("pic3");
-                pic4=bundle.getString("pic4");
+
                 ad_no=bundle.getString("ad_no");
-                wish_no=bundle.getString("wish_no");
-                activity=bundle.getString("activity");
-                soldno=bundle.getString("sold");
-                uid=bundle.getString("userid");
+                addetailsset(ad_no);
+                wishcheck();
 
-                if(soldno!=null && soldno.equals("1"))
-                {
-                    call.setVisibility(View.GONE);
-                    offer.setVisibility(View.GONE);
-                }
-
-                setdata();
             }
         }
 
@@ -361,9 +335,9 @@ public class AdDiscriptionActivity extends AppCompatActivity {
                     wishr.setVisibility(View.VISIBLE);
                     wish.setVisibility(View.GONE);
                     Toast.makeText(getApplicationContext(), "Added to Wishlist", Toast.LENGTH_SHORT).show();
-                    Vibrator v = (Vibrator) getApplication().getSystemService(Context.VIBRATOR_SERVICE);
-                    assert v != null;
-                    v.vibrate(400);
+//                    Vibrator v = (Vibrator) getApplication().getSystemService(Context.VIBRATOR_SERVICE);
+//                    assert v != null;
+//                    v.vibrate(400);
                     HomeActivity.listwish.add(ad_no);
                     ref.setValue(ad_no);
                 }
@@ -396,10 +370,10 @@ public class AdDiscriptionActivity extends AppCompatActivity {
 
     }
 
-    public void addetailsset() {
+    public void addetailsset(String ad_no) {
 
         DatabaseReference refer;
-        refer=firebaseDatabase.getReference().child("Ads").child(msgad_no);
+        refer=firebaseDatabase.getReference().child("Ads").child(ad_no);
         refer.addValueEventListener(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -422,6 +396,14 @@ public class AdDiscriptionActivity extends AppCompatActivity {
                 pic3=dataSnapshot.child("image3").getValue(String.class);
                 pic4=dataSnapshot.child("image4").getValue(String.class);
                 uid = dataSnapshot.child("userid").getValue(String.class);
+                soldno=dataSnapshot.child("sold").getValue(String.class);
+
+                if(soldno!=null && soldno.equals("1"))
+                {
+                    call.setVisibility(View.GONE);
+                    offer.setVisibility(View.GONE);
+                }
+
                 setdata();
             }
 
@@ -437,7 +419,7 @@ public class AdDiscriptionActivity extends AppCompatActivity {
 
         for(int i=0;i<HomeActivity.listwish.size();i++)
         {
-            if(HomeActivity.listwish.get(i).equals(msgad_no))
+            if(HomeActivity.listwish.get(i).equals(ad_no))
             {
                 wish_no="1";
                 break;

@@ -19,6 +19,7 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.google.firebase.database.Query;
 import com.quidish.anshgupta.login.AdModel;
+import com.quidish.anshgupta.login.Home.Searching.CompleteSearchActivity;
 import com.quidish.anshgupta.login.PostYourAd.CategoryActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
@@ -42,7 +43,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -69,8 +69,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,7 +82,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     FirebaseAuth myfba;
     DrawerLayout drawer;
-    TextView home,electronics,mobile,cycle,book;
     ImageButton drawtog,wishlist,voices;
     private SliderLayout mDemoSlider;
     FloatingActionButton sell;
@@ -103,7 +101,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private static final int REQUEST_CODE = 1234;
     TextView useremail;
     List<AdModel> listBooks=new ArrayList<>();
-    List<AdModel> listAll=new ArrayList<>();
+    public static List<AdModel> listAll=new ArrayList<>();
     EditText search;
     public static List<String> listwish=new ArrayList<>();
     int fblog=0;
@@ -132,11 +130,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         myfba=FirebaseAuth.getInstance();
         fuser = myfba.getCurrentUser();
         recycle =findViewById(R.id.recycle);
-
         recycle.setNestedScrollingEnabled(false);
-
-        home=findViewById(R.id.home);
-        mobile=findViewById(R.id.mobile);
         sell=findViewById(R.id.sell);
         hideimg=findViewById(R.id.hideimg);
         search=findViewById(R.id.search);
@@ -762,7 +756,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-    public void addproductad(final long start, final long end){
+    public void addproductad(final long start){
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
 
@@ -876,7 +870,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
 
-                for(long i=start;i>=end;i--) {
+                for(long i=start;i>=adend;i--) {
 
                     String ad_no=Long.toString(i);
 
@@ -886,57 +880,38 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     String adsold = dataSnapshot.child(ad_no).child("sold").getValue(String.class);
                     String usid = dataSnapshot.child(ad_no).child("userid").getValue(String.class);
 
-                    if (adsold == null || adsold.equals("1"))
-                        continue;
+                    if (adsold==null || adsold.equals("1"))
+                    { if(adend>0){
+                        adend--; } }
 
                     else if (fuser != null) {
                         if (userid.equals(usid))
-                            continue;
-                    }
+                        {if(adend>0){
+                            adend--;
+                            } } }
 
                     else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
-                        continue;
+                    { if(adend>0){
+                        adend--;
+                        } }
 //                 DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(ad_no).child("posted");
 //                 current_user.setValue("1");
                     else{
+                        ad_no=Long.toString(i);
                     String adtitle = dataSnapshot.child(ad_no).child("ad_title").getValue(String.class);
-                    String model = dataSnapshot.child(ad_no).child("model").getValue(String.class);
-                    String include = dataSnapshot.child(ad_no).child("includes").getValue(String.class);
-                    String year = dataSnapshot.child(ad_no).child("year").getValue(String.class);
-                    String condition = dataSnapshot.child(ad_no).child("condition").getValue(String.class);
-                    String addetails = dataSnapshot.child(ad_no).child("ad_details").getValue(String.class);
                     String price = dataSnapshot.child(ad_no).child("price").getValue(String.class);
-                    String address = dataSnapshot.child(ad_no).child("address").getValue(String.class);
                     String brand = dataSnapshot.child(ad_no).child("brand").getValue(String.class);
-                    String email = dataSnapshot.child(ad_no).child("email_id").getValue(String.class);
-                    String mobile = dataSnapshot.child(ad_no).child("mobile").getValue(String.class);
-                    String name = dataSnapshot.child(ad_no).child("name").getValue(String.class);
                     String image1 = dataSnapshot.child(ad_no).child("image1").getValue(String.class);
-                    String image2 = dataSnapshot.child(ad_no).child("image2").getValue(String.class);
-                    String image3 = dataSnapshot.child(ad_no).child("image3").getValue(String.class);
-                    String image4 = dataSnapshot.child(ad_no).child("image4").getValue(String.class);
 
-                    price = "₹ " + price;
+                    price = "₹" + price;
 
                     AdModel fire = new AdModel();
 
                     fire.setPrice(price);
                     fire.setTitle(adtitle);
-                    fire.setModel(model);
-                    fire.setIncludes(include);
-                    fire.setYear(year);
-                    fire.setCondition(condition);
-                    fire.setDetails(addetails);
-                    fire.setAddress(address);
                     fire.setBrand(brand);
-                    fire.setEmail(email);
-                    fire.setMobile(mobile);
-                    fire.setName(name);
-                    fire.setUrl1(image1);
-                    fire.setUrl2(image2);
-                    fire.setUrl3(image3);
-                    fire.setUrl4(image4);
                     fire.setAdno(ad_no);
+                    fire.setUrl1(image1);
                     fire.setActivity("2");
                     fire.setSold("0");
                     fire.setUser(usid);
@@ -979,7 +954,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run() {
                 adend=max(adstart-49,1);
-                addproductad(adstart,adend);
+                addproductad(adstart);
                 progbar.setVisibility(View.GONE);
             }
         }, 2000);
@@ -1004,7 +979,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void run() {
                             adend=max(adstart-25,1);
-                            addproductad(adstart,adend);
+                            addproductad(adstart);
 
                             progbar.setVisibility(View.GONE);
                         }
@@ -1113,11 +1088,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     listwish.clear();
                     for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
-
                         String advalue=dataSnapshot1.getValue(String.class);
-
                         listwish.add(advalue);
-
                     }
                     addbooksad();
                     Adtraversal();
@@ -1149,8 +1121,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()) {
 
-                    String ad_no=dataSnapshot1.getKey();
-
                     bkct++;
 
                     if(bkct==6)
@@ -1160,59 +1130,33 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     String adsold = dataSnapshot1.child("sold").getValue(String.class);
                     String usid = dataSnapshot1.child("userid").getValue(String.class);
 
-                    if (adsold == null || adsold.equals("1"))
-                        continue;
+                    if (adsold == null || adsold.equals("1")){}
 
                     else if (fuser != null) {
-                        if (userid.equals(usid))
-                            continue;
+                        if (userid.equals(usid)){}
                     }
 
-                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
-                        continue;
+                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst)){}
 
                     else{
                         String adtitle = dataSnapshot1.child("ad_title").getValue(String.class);
-                        String model = dataSnapshot1.child("model").getValue(String.class);
-                        String include = dataSnapshot1.child("includes").getValue(String.class);
-                        String year = dataSnapshot1.child("year").getValue(String.class);
-                        String condition = dataSnapshot1.child("condition").getValue(String.class);
-                        String addetails = dataSnapshot1.child("ad_details").getValue(String.class);
                         String price = dataSnapshot1.child("price").getValue(String.class);
-                        String address = dataSnapshot1.child("address").getValue(String.class);
                         String brand = dataSnapshot1.child("brand").getValue(String.class);
-                        String email = dataSnapshot1.child("email_id").getValue(String.class);
-                        String mobile = dataSnapshot1.child("mobile").getValue(String.class);
-                        String name = dataSnapshot1.child("name").getValue(String.class);
                         String image1 = dataSnapshot1.child("image1").getValue(String.class);
-                        String image2 = dataSnapshot1.child("image2").getValue(String.class);
-                        String image3 = dataSnapshot1.child("image3").getValue(String.class);
-                        String image4 = dataSnapshot1.child("image4").getValue(String.class);
+                        String ad_no=dataSnapshot1.getKey();
 
-                        price = "₹ " + price;
+                        price = "₹" + price;
 
                         AdModel fire = new AdModel();
 
                         fire.setPrice(price);
                         fire.setTitle(adtitle);
-                        fire.setModel(model);
-                        fire.setIncludes(include);
-                        fire.setYear(year);
-                        fire.setCondition(condition);
-                        fire.setDetails(addetails);
-                        fire.setAddress(address);
                         fire.setBrand(brand);
-                        fire.setEmail(email);
-                        fire.setMobile(mobile);
-                        fire.setName(name);
-                        fire.setUrl1(image1);
-                        fire.setUrl2(image2);
-                        fire.setUrl3(image3);
-                        fire.setUrl4(image4);
                         fire.setAdno(ad_no);
                         fire.setActivity("2");
                         fire.setSold("0");
                         fire.setUser(usid);
+                        fire.setUrl1(image1);
 
                         if(listwish.contains(ad_no))
                             fire.setWish("1");

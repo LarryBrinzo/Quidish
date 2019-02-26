@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -24,10 +24,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:hardwareAccelerated="true"
         android:name=".Network.MyApplication"
         android:allowBackup="true"
         android:configChanges="screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/quidif"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -52,7 +52,6 @@
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".Activity3" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -111,9 +110,18 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Home.CompleteSearchActivity"
+            android:name=".Home.Searching.CompleteSearchActivity"
             android:configChanges="orientation"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity
             android:name=".ZoomActivity"
             android:configChanges="orientation"
@@ -222,7 +230,8 @@
 
         <activity
             android:name=".Home.GetUsersLocationActivity"
-            android:label="@string/title_activity_get_users_location"></activity>
+            android:label="@string/title_activity_get_users_location" />
+        <activity android:name=".Home.Searching.SearchShowActivity"></activity>
     </application>
 
 </manifest>

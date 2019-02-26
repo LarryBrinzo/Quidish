@@ -6,6 +6,7 @@
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
+    <string name="searchhint">Search for Products &amp; Brands</string>
     <string name="facebook_app_id">342953196527149</string>
     <string name="fb_login_protocol_scheme">fb342953196527149</string>
     <!-- TODO: Remove or change this placeholder text -->
