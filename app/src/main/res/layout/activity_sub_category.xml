@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context=".PostYourAd.PostAd.SelectCatagoryActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/backbt"
+        android:clickable="true"
+        android:layout_width="60dp"
+        android:background="?attr/selectableItemBackground"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="27dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:scaleType="centerInside"
+            android:background="@null"
+            app:srcCompat="@drawable/backb" />
+
+    </LinearLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:descendantFocusability="afterDescendants"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/texttoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="3dp"
+        android:text="Review Your Details"
+        android:textColor="#000"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="13dp"
+                android:layout_gravity="center"
+                android:background="#f5f5f5" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/categories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:clipToPadding="false"
+        android:descendantFocusability="blocksDescendants"
+        android:fillViewport="true"
+        android:overScrollMode="never" />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

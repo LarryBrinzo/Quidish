@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/edit_option"
+        android:enabled="true"
+        android:icon="@drawable/edit"
+        android:title="@string/edit"
+        android:tint="#fff"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/del_option"
+        android:enabled="true"
+        android:icon="@drawable/del"
+        android:title="@string/delete"
+        android:tint="#fff"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/rep_option"
+        android:enabled="true"
+        android:icon="@drawable/replace"
+        android:title="@string/replace"
+        android:tint="#fff"
+        app:showAsAction="ifRoom" />
+</menu>

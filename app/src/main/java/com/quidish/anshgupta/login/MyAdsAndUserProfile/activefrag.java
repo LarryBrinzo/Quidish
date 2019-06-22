@@ -82,7 +82,7 @@ public class activefrag extends Fragment {
     FirebaseDatabase firebaseDatabase;
     FirebaseUser fuser;
     String userid;
-    DatabaseReference databaseReference,reference;
+    DatabaseReference databaseReference;
     List<AdModel> listactive=new ArrayList<>();
     List<String> userads=new ArrayList<>();
     RecyclerView recycle;

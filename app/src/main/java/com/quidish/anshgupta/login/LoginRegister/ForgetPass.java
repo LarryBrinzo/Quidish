@@ -43,7 +43,7 @@ public class ForgetPass extends AppCompatActivity implements ConnectivityReceive
 
         email=findViewById(R.id.email);
         back=findViewById(R.id.backbt);
-        reset=findViewById(R.id.reset);
+        reset=findViewById(R.id.next);
         progressDialog =new ProgressDialog(this,R.style.MyAlertDialogStyle);
 
 

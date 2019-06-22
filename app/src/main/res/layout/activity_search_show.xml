@@ -12,22 +12,23 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:background="#2D3E4E"
+        android:background="#fff"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="visible">
 
         <LinearLayout
+            android:id="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/white"
             android:elevation="3dp"
+            android:visibility="gone"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/backbt"
+                android:id="@+id/backbt2"
                 android:clickable="true"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -45,59 +46,261 @@
 
             </LinearLayout>
 
+            <android.support.v7.widget.SearchView
+                android:id="@+id/search"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="58dp"
+                android:backgroundTint="#fff"
+                android:ems="10"
+                android:background="@null"
+                android:inputType="text"
+                android:focusable="true"
+                android:textColor="#000000"
+                android:textCursorDrawable="@null"
+                android:textColorHint="#fff"
+                android:queryBackground="@null"
+                app:queryBackground="@null"
+                android:textColorLink="#fff"
+                app:iconifiedByDefault="false"
+                app:searchIcon="@null"
+                app:theme="@style/AppSearchView"
+                >
+
+            </android.support.v7.widget.SearchView>
         </LinearLayout>
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scrollView2"
+        <LinearLayout
+            android:id="@+id/toolbar1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:background="#FFFFFF"
-            android:descendantFocusability="blocksDescendants"
-            android:fillViewport="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout11"
-            app:layout_constraintVertical_bias="0.0">
+            android:layout_height="56dp"
+            android:elevation="3dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#fff"
-                android:orientation="vertical">
+                android:id="@+id/backbt"
+                android:clickable="true"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:focusable="true">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycle"
+                <ImageView
+                    android:layout_width="23dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/backb"
+                    android:tint="#767982"
+                    android:scaleType="centerInside"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:descendantFocusability="blocksDescendants"
-                    android:background="#FFFFFF"
-                    android:layout_marginBottom="10dp"
-                    android:clipToPadding="false"
-                    android:fillViewport="true">
+                    android:textSize="17dp"
+                    android:maxLines="1"
+                    android:textColor="#767982"
+                    android:text=""
+                    android:textStyle="bold"/>
 
-                </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="13dp"
+                    android:maxLines="1"
+                    android:textColor="#777777"
+                    android:text=""
+                    />
+
+            </LinearLayout>
+            
+            <ImageView
+                android:id="@+id/searchbt"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:clickable="true"
+                android:src="@drawable/search"
+                android:tint="#767982"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"/>
+
+        </LinearLayout>
+
+
+
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:background="#F5F5F5"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/scrollView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:descendantFocusability="blocksDescendants"
+                android:fillViewport="true"
+                android:background="#F5F5F5"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout11"
+                app:layout_constraintVertical_bias="0.0">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:background="#F5F5F5"
                     android:orientation="vertical">
 
-                    <ProgressBar
-                        android:id="@+id/prog"
-                        android:layout_width="30dp"
-                        android:visibility="gone"
-                        android:layout_height="30dp" />
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycle"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_weight="1"
+                        android:descendantFocusability="blocksDescendants"
+                        android:background="#FFFFFF"
+                        android:clipToPadding="false"
+                        android:fillViewport="true">
+
+                    </android.support.v7.widget.RecyclerView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ProgressBar
+                            android:id="@+id/prog"
+                            android:layout_width="30dp"
+                            android:visibility="gone"
+                            android:layout_height="30dp" />
+
+                    </LinearLayout>
+
+
 
                 </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/suggestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:background="#FFFFFF"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:descendantFocusability="blocksDescendants"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </android.support.constraint.ConstraintLayout>
+
+
+
+
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom|end"
+            android:background="#f4f4fc"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="50dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:tint="#95969B"
+                    android:src="@drawable/sort"
+                    android:scaleType="centerInside"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#3F4249"
+                    android:textSize="14dp"
+                    android:text="SORT"
+                    />
 
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="40dp"
+                android:background="#f4f4fc"
+                android:layout_gravity="center_vertical"
+                />
+
+
+            <LinearLayout
+                android:id="@+id/filter"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="50dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:tint="#95969B"
+                    android:src="@drawable/filter"
+                    android:scaleType="centerInside"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="#3F4249"
+                    android:textSize="14dp"
+                    android:text="FILTER"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

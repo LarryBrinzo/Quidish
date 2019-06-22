@@ -15,11 +15,27 @@
       },
       "oauth_client": [
         {
-          "client_id": "111375467460-t5rop1euolqti9vvlaehvdo9e8pq2ohk.apps.googleusercontent.com",
+          "client_id": "111375467460-vjc1r9kn6c3o9sshpkmpphcrmnpv3vt1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.quidish.anshgupta.login",
             "certificate_hash": "48168554e604d14c98b62a5a8636f2b1c635c914"
+          }
+        },
+        {
+          "client_id": "111375467460-9h2dten53rfr3dq8tv27r20petkecb3m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quidish.anshgupta.login",
+            "certificate_hash": "da6478db0a074c456ff74265f995ed93fa18b7ad"
+          }
+        },
+        {
+          "client_id": "111375467460-3gbntq2i5ahoe7l5usq53v761fgpcd2e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quidish.anshgupta.login",
+            "certificate_hash": "fb82768e36429c43dbbef2ff6f7338976217e7b9"
           }
         },
         {
@@ -33,22 +49,16 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "111375467460-hmle6hqs2ojg7vgk98uh4g0c475urog6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-8985857217951323~9662969585"
     }
   ],
   "configuration_version": "1"

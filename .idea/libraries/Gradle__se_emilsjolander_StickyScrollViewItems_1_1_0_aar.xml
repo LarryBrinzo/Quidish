@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: se.emilsjolander:StickyScrollViewItems:1.1.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/StickyScrollViewItems-1.1.0.aar/a070eb9bb1db9194f7959cf143b09ae9/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/StickyScrollViewItems-1.1.0.aar/a070eb9bb1db9194f7959cf143b09ae9/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/se.emilsjolander/StickyScrollViewItems/1.1.0/29dd71a807db0369553a062df58ea05e2276958b/StickyScrollViewItems-1.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

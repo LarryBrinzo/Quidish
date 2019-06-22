@@ -10,6 +10,16 @@
     <color name="grn">#a6ba94</color>
     <color name="colorProgressBar">#23C5A0</color>
     <color name="row_activated">#6687CEEB</color>
+    <color name="notactivated">#636269</color>
+    <color name="activated">#5d5d63</color>
+    <color name="greenAccent">#10a115</color>
+
+
+    <color name="lightBlue">#64FEFC</color>
+    <color name="darkGrey">#414247</color>
+    <color name="charcoalGrey">#4F5052</color>
+    <color name="orange">#FE5E00</color>
+    <color name="blackAlpha">#242424</color>
 
     <!-- Screens background color-->
     <color name="bg_screen1">#f64c73</color>

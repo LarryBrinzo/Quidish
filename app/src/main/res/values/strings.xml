@@ -6,10 +6,28 @@
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
+    <string name="subtype_generic">subtype</string>
     <string name="searchhint">Search for Products &amp; Brands</string>
     <string name="facebook_app_id">342953196527149</string>
+    <string name="button_text"><font size="18">Next</font>\n\<font size="10">MARK YOUR ADDRESS ON THE MAP</font></string>
+    <string name="button_text2"><font size="18">Next</font>\n\<font size="10">CONFIRM YOUR LOCATION</font></string>
+
     <string name="fb_login_protocol_scheme">fb342953196527149</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_get_users_location">Map</string>
+    <string name="title_activity_mark_your_location">Map</string>
+
+
+    <string name="replace">Replace</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="bright">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="sat">Saturation</string>
+    <string name="rotate_crop">Rotate/Crop</string>
+    <string name="transition_image">transition:IMAGE</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="rotate_right">Rotate Right</string>
+    <string name="rotate_left">Rotate Left</string>
 </resources>

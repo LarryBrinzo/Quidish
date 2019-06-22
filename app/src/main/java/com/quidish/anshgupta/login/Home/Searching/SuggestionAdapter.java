@@ -1,11 +1,18 @@
 package com.quidish.anshgupta.login.Home.Searching;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +22,12 @@ import com.quidish.anshgupta.login.R;
 
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.MyHoder>{
 
-    private List<String> list;
+    private List<Pair<String,Integer>> list;
     private Context context;
 
-    SuggestionAdapter(List<String> list, Context context) {
+    public SuggestionAdapter(List<Pair<String, Integer>> list, Context context) {
         this.list = list;
         this.context = context;
 
@@ -39,21 +44,32 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.My
     @Override
     public void onBindViewHolder(@NonNull final MyHoder holder, @SuppressLint("RecyclerView") final int position) {
 
-        holder.suggestion.setText(list.get(position));
+        char ch[] = list.get(position).first.toCharArray();
+        for (int i = 0; i < list.get(position).first.length(); i++) {
+
+            if (i == 0 && ch[i] != ' ' ||
+                    ch[i] != ' ' && ch[i - 1] == ' ') {
+
+                if (ch[i] >= 'a' && ch[i] <= 'z') {
+                    ch[i] = (char)(ch[i] - 'a' + 'A');
+                }
+            }
+        }
+
+        String st = new String(ch);
+
+        SpannableString ss1=  new SpannableString(st.substring(0,list.get(position).second));
+        ss1.setSpan(new StyleSpan(Typeface.BOLD), 0, ss1.length(), 0);
+        ss1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.suggestion.append(ss1);
+        holder.suggestion.append(st.substring(list.get(position).second));
 
         holder.cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                SharedPreferences pref = context.getSharedPreferences("MyPref", MODE_PRIVATE);
-                SharedPreferences.Editor searchhint = pref.edit();
-
-                int serachnumber=pref.getInt("serachnumber", 0)+1;
-                String srchitm="recent"+Integer.toString(serachnumber);
-                searchhint.putString(srchitm,list.get(position));
-
                 Intent intent=new Intent(context,SearchShowActivity.class);
-                intent.putExtra("searchstring", list.get(position));
+                intent.putExtra("searchstring", list.get(position).first);
                 context.startActivity(intent);
             }
         });

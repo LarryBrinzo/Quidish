@@ -2,42 +2,37 @@ package com.quidish.anshgupta.login.Home;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
+import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
+
 import com.daimajia.slider.library.Indicators.PagerIndicator;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.Query;
 import com.quidish.anshgupta.login.AdModel;
+import com.quidish.anshgupta.login.Home.Location.GetUsersLocationActivity;
 import com.quidish.anshgupta.login.Home.Searching.CompleteSearchActivity;
-import com.quidish.anshgupta.login.PostYourAd.CategoryActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
-import com.quidish.anshgupta.login.Messaging.MessageActivity;
 import com.quidish.anshgupta.login.MyAdsAndUserProfile.MyAdsActivity;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Messaging.MyChatActivity;
 import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
 import com.quidish.anshgupta.login.MyAccount.MyaccountActivity;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
+import com.quidish.anshgupta.login.PostYourAd.PostAd.SelectPictureActivity;
 import com.quidish.anshgupta.login.R;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -86,11 +81,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private SliderLayout mDemoSlider;
     FloatingActionButton sell;
     ValueEventListener eventListener;
-    String userid,mapdate,userclg="0";
+    static public String userid,mapdate,userclg="0";
     FirebaseDatabase firebaseDatabase;
     NavigationView navigationView;
     NestedScrollView scrollView;
-    FirebaseUser fuser;
+    static public FirebaseUser fuser;
     HashMap<String,Integer> url_maps = new HashMap<>();
     NotificationChannel mChannel;
     NotificationManager notifManager;
@@ -99,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     LinearLayout location;
     PagerIndicator pagerIndicator;
     private static final int REQUEST_CODE = 1234;
-    TextView useremail;
+    TextView useremail,uclg;
     List<AdModel> listBooks=new ArrayList<>();
     public static List<AdModel> listAll=new ArrayList<>();
     EditText search;
@@ -113,6 +108,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     long adcount=0,adstart,adend,itm=0;
     UserAdsAdapter recyclerAdapterAll;
     CategoryAdapter recyclerAdapterBooks;
+    ShimmerFrameLayout container;
 
 
 
@@ -121,7 +117,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_4);
+        setContentView(R.layout.activity_home);
         checkConnection();
 
         drawer=findViewById(R.id.drawer_layout);
@@ -143,6 +139,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         pagerIndicator =  findViewById(R.id.banner);
         progbar=findViewById(R.id.prog);
         horzontalrecycle=findViewById(R.id.horzontalrecycle);
+
+        container = findViewById(R.id.shimmer_view_container);
+        container.startShimmer();
 
         recyclerAdapterAll = new UserAdsAdapter(listAll,HomeActivity.this);
         RecyclerView.LayoutManager recyceAll = new GridLayoutManager(HomeActivity.this,2);
@@ -167,6 +166,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 adstart=adcount-1;
                 adend=max(adstart-29,1);
                 userwish();
+
+                addbooksad();
+                Adtraversal();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -256,102 +258,102 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         linkaccount();
 
-        if(fuser!=null) {
-
-            databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Allmsg");
-
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @SuppressLint("WrongConstant")
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    tunreadmsg = 0;
-
-                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
-                        if (dataSnapshot1.hasChild("msgno")) {
-                            String x = dataSnapshot1.child("msgno").getValue(String.class);
-
-                            if (x != null) {
-                                int addv = Integer.parseInt(x);
-                                tunreadmsg += addv;
-                            }
-
-                        }
-
-                    }
-
-                    if (tunreadmsg > 0 && MessageActivity.work==2) {
-
-                        if (notifManager == null) {
-                            notifManager = (NotificationManager) getSystemService
-                                    (Context.NOTIFICATION_SERVICE);
-                        }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            NotificationCompat.Builder builder;
-                            Intent intent = new Intent(getApplicationContext(), MyChatActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            PendingIntent pendingIntent;
-                            int importance = NotificationManager.IMPORTANCE_HIGH;
-                            if (mChannel == null) {
-                                mChannel = new NotificationChannel
-                                        ("0", "Unread Messages", importance);
-                                mChannel.setDescription("You have " + Integer.toString(tunreadmsg) + " unread Messages");
-                                mChannel.enableVibration(true);
-                                notifManager.createNotificationChannel(mChannel);
-                            }
-                            builder = new NotificationCompat.Builder(HomeActivity.this, "0");
-
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                            pendingIntent = PendingIntent.getActivity(HomeActivity.this, 1251, intent, PendingIntent.FLAG_ONE_SHOT);
-                            builder.setContentTitle("Unread Messages")
-                                    .setSmallIcon(R.drawable.quid2) // required
-                                    .setContentText("You have " + Integer.toString(tunreadmsg) + " unread Messages")  // required
-                                    .setDefaults(Notification.DEFAULT_ALL)
-                                    .setAutoCancel(true)
-                                    .setLargeIcon(BitmapFactory.decodeResource
-                                            (getResources(), R.drawable.quid2))
-                                    .setBadgeIconType(R.drawable.quid2)
-                                    .setContentIntent(pendingIntent)
-                                    .setSound(RingtoneManager.getDefaultUri
-                                            (RingtoneManager.TYPE_NOTIFICATION));
-                            Notification notification = builder.build();
-                            notifManager.notify(0, notification);
-                        } else {
-
-                            Intent intent = new Intent(getApplicationContext(), MyChatActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            PendingIntent pendingIntent = null;
-
-                            pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0, intent, 0);
-
-                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this)
-                                    .setContentTitle("Unread Messages")
-                                    .setContentText("You have " + Integer.toString(tunreadmsg) + " unread Messages")
-                                    .setAutoCancel(true)
-                                    .setColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary))
-                                    .setSound(defaultSoundUri)
-                                    .setSmallIcon(R.drawable.quid2)
-                                    .setContentIntent(pendingIntent)
-                                    .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle("Unread Messages").bigText("You have " + Integer.toString(tunreadmsg) + " unread Messages"));
-
-                            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            assert notificationManager != null;
-                            notificationManager.notify(0, notificationBuilder.build());
-                        }
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
+//        if(fuser!=null) {
+//
+//            databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Allmsg");
+//
+//            databaseReference.addValueEventListener(new ValueEventListener() {
+//                @SuppressLint("WrongConstant")
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                    tunreadmsg = 0;
+//
+//                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+//
+//                        if (dataSnapshot1.hasChild("msgno")) {
+//                            String x = dataSnapshot1.child("msgno").getValue(String.class);
+//
+//                            if (x != null) {
+//                                int addv = Integer.parseInt(x);
+//                                tunreadmsg += addv;
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//                    if (tunreadmsg > 0 && MessageActivity.work==2) {
+//
+//                        if (notifManager == null) {
+//                            notifManager = (NotificationManager) getSystemService
+//                                    (Context.NOTIFICATION_SERVICE);
+//                        }
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                            NotificationCompat.Builder builder;
+//                            Intent intent = new Intent(getApplicationContext(), MyChatActivity.class);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            PendingIntent pendingIntent;
+//                            int importance = NotificationManager.IMPORTANCE_HIGH;
+//                            if (mChannel == null) {
+//                                mChannel = new NotificationChannel
+//                                        ("0", "Unread Messages", importance);
+//                                mChannel.setDescription("You have " + Integer.toString(tunreadmsg) + " unread Messages");
+//                                mChannel.enableVibration(true);
+//                                notifManager.createNotificationChannel(mChannel);
+//                            }
+//                            builder = new NotificationCompat.Builder(HomeActivity.this, "0");
+//
+//                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+//                                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//                            pendingIntent = PendingIntent.getActivity(HomeActivity.this, 1251, intent, PendingIntent.FLAG_ONE_SHOT);
+//                            builder.setContentTitle("Unread Messages")
+//                                    .setSmallIcon(R.drawable.quid2) // required
+//                                    .setContentText("You have " + Integer.toString(tunreadmsg) + " unread Messages")  // required
+//                                    .setDefaults(Notification.DEFAULT_ALL)
+//                                    .setAutoCancel(true)
+//                                    .setLargeIcon(BitmapFactory.decodeResource
+//                                            (getResources(), R.drawable.quid2))
+//                                    .setBadgeIconType(R.drawable.quid2)
+//                                    .setContentIntent(pendingIntent)
+//                                    .setSound(RingtoneManager.getDefaultUri
+//                                            (RingtoneManager.TYPE_NOTIFICATION));
+//                            Notification notification = builder.build();
+//                            notifManager.notify(0, notification);
+//                        } else {
+//
+//                            Intent intent = new Intent(getApplicationContext(), MyChatActivity.class);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            PendingIntent pendingIntent = null;
+//
+//                            pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0, intent, 0);
+//
+//                            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this)
+//                                    .setContentTitle("Unread Messages")
+//                                    .setContentText("You have " + Integer.toString(tunreadmsg) + " unread Messages")
+//                                    .setAutoCancel(true)
+//                                    .setColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary))
+//                                    .setSound(defaultSoundUri)
+//                                    .setSmallIcon(R.drawable.quid2)
+//                                    .setContentIntent(pendingIntent)
+//                                    .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle("Unread Messages").bigText("You have " + Integer.toString(tunreadmsg) + " unread Messages"));
+//
+//                            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//                            assert notificationManager != null;
+//                            notificationManager.notify(0, notificationBuilder.build());
+//                        }
+//
+//                    }
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//        }
 
 
         headview.setOnClickListener(new View.OnClickListener() {
@@ -386,16 +388,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
 
-                if(fuser==null)
-                {
-                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
-                    startActivity(intent);
-                }
+                SelectPictureActivity.Selectedimagesno.clear();
+                SelectPictureActivity.Selectedpos.clear();
+                SelectPictureActivity.SelectedFilepath.clear();
+                SelectPictureActivity.Allimages.clear();
+                SelectPictureActivity.imageno=1;
 
-                else{
-                    Intent intent=new Intent(getApplicationContext(),CategoryActivity.class);
-                    startActivity(intent);
-                }
+                Intent intent=new Intent(getApplicationContext(),SelectPictureActivity.class);
+                intent.putExtra("start","1");
+                startActivity(intent);
+
+//                if(fuser==null)
+//                {
+//                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+//                    startActivity(intent);
+//                }
+//
+//                else{
+//                    Intent intent=new Intent(getApplicationContext(),CategoryActivity.class);
+//                    startActivity(intent);
+//                }
             }
         });
 
@@ -479,9 +491,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void linkaccount() {
 
         if(fuser==null)
-        {
             return;
-        }
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -497,9 +507,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     String name = dataSnapshot.child("users").child(userid).child("username").getValue(String.class);
                     useremail.setText(name);
                 }
-
-                userclg=dataSnapshot.child("users").child(userid).child("institute").getValue(String.class);
-
             }
 
             @Override
@@ -884,16 +891,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     { if(adend>0){
                         adend--; } }
 
-                    else if (fuser != null) {
-                        if (userid.equals(usid))
-                        {if(adend>0){
+                    else if (fuser != null && userid.equals(usid)) {
+                        if(adend>0){
                             adend--;
-                            } } }
+                            } }
 
-                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
-                    { if(adend>0){
-                        adend--;
-                        } }
+//                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst))
+//                    { if(adend>0){
+//                        adend--;
+//                        } }
 //                 DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(ad_no).child("posted");
 //                 current_user.setValue("1");
                     else{
@@ -1091,18 +1097,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         String advalue=dataSnapshot1.getValue(String.class);
                         listwish.add(advalue);
                     }
-                    addbooksad();
-                    Adtraversal();
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
-        }
 
-        else{
-            addbooksad();
-            Adtraversal();
         }
 
     }
@@ -1121,24 +1121,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()) {
 
-                    bkct++;
-
-                    if(bkct==6)
-                      booksreference.removeEventListener(eventListener);
-
                     String adinst = dataSnapshot1.child("institute").getValue(String.class);
                     String adsold = dataSnapshot1.child("sold").getValue(String.class);
                     String usid = dataSnapshot1.child("userid").getValue(String.class);
 
                     if (adsold == null || adsold.equals("1")){}
 
-                    else if (fuser != null) {
-                        if (userid.equals(usid)){}
+                    else if (fuser != null && userid.equals(usid)) {
                     }
 
-                    else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst)){}
+                   // else if (userclg != null && !userclg.equals("") && !userclg.equals("0") && !userclg.equals(adinst)){}
 
                     else{
+
+                        bkct++;
+
+                        if(bkct==6)
+                            break;
+
                         String adtitle = dataSnapshot1.child("ad_title").getValue(String.class);
                         String price = dataSnapshot1.child("price").getValue(String.class);
                         String brand = dataSnapshot1.child("brand").getValue(String.class);
@@ -1165,15 +1165,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             fire.setWish("0");
 
                         listBooks.add(fire);
-                        recyclerAdapterBooks.notifyItemInserted(listAll.size() - 1);
 
                     }
+
+                    recyclerAdapterBooks.notifyDataSetChanged();
                 }
+
+                container.setVisibility(View.GONE);
+                container.stopShimmer();
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                container.setVisibility(View.GONE);
+                container.stopShimmer();
             }
         });
 
@@ -1258,21 +1264,34 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void onResume() {
         super.onResume();
         MyApplication.getInstance().setConnectivityListener(this);
-
         mDemoSlider.startAutoCycle();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        userclg=pref.getString("userinstitute", null);
+
+        uclg=findViewById(R.id.uclg);
+        uclg.setText(userclg);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mDemoSlider.stopAutoCycle();
+        container.setVisibility(View.GONE);
+        container.stopShimmer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mDemoSlider.stopAutoCycle();
+        container.setVisibility(View.GONE);
+        container.stopShimmer();
     }
 
     @Override

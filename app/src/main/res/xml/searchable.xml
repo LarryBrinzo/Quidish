@@ -4,8 +4,6 @@
 android:label="@string/app_name"
 android:hint="@string/searchhint"
     android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
-    android:searchSuggestSelection=" ? "
-    android:searchSuggestThreshold="2"
     >
 
 </searchable>

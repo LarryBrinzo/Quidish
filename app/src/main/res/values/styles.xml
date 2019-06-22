@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="windowActionModeOverlay">true</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/activated</item>
         <item name="actionModeStyle">@style/MyActionMode</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="actionModeBackground">@color/white</item>
@@ -13,9 +13,46 @@
         <item name="actionModeCloseDrawable">@drawable/backa</item>
     </style>
 
+    <style name="TextLabel" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="ImageDisplayTheme" parent="Theme.AppCompat">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
+    <style name="RotCropTheme" parent="Theme.AppCompat">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
     <style name="TextAppearance44">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">17dp</item>
+    </style>
+
+    <style name="AppTheme.WhiteAccent">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.GreenAccent">
+        <item name="colorAccent">@color/greenAccent</item>
+        <item name="android:thickness">12dp</item>
+    </style>
+
+    <style name="MenuItems" parent="AppTheme">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="transparent_dialog_borderless" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">#FF333333</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">

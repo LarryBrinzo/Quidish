@@ -15,12 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -46,6 +40,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
 
                 <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+
+                <data android:scheme="file" />
             </intent-filter>
         </activity>
 
@@ -216,22 +215,37 @@
             android:name=".Network.No_InternetActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
-        -->
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Home.GetUsersLocationActivity"
-            android:label="@string/title_activity_get_users_location" />
-        <activity android:name=".Home.Searching.SearchShowActivity"></activity>
+            android:name=".Home.Location.GetUsersLocationActivity"
+            android:label="@string/title_activity_get_users_location"
+            android:windowSoftInputMode="stateVisible" />
+        <activity
+            android:name=".Home.Searching.SearchShowActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".Home.Searching.FilterSearchActivity" />
+        <activity android:name=".Home.Location.AddInstituteActivity" />
+        <activity
+            android:name=".Home.Location.MarkYourLocationActivity"
+            android:label="@string/title_activity_mark_your_location" />
+        <activity android:name=".PostYourAd.PostAd.SelectPictureActivity" />
+        <activity android:name=".PostYourAd.PostAd.SelectCatagoryActivity" />
+        <activity android:name=".PostYourAd.PostAd.SubCategoryActivity" />
+        <activity android:name=".PostYourAd.ImageEditor.ImageEditorActivity" />
+        <activity
+            android:name=".PostYourAd.ImageEditor.ImageCropActivity"
+            android:parentActivityName=".PostYourAd.ImageEditor.ImageEditorActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/RotCropTheme" />
+        <activity android:name=".PostYourAd.PostAd.AdDiscriptionActivity" />
+        <activity android:name=".PostYourAd.PostAd.LocationSetActivity" />
+        <activity android:name=".PostYourAd.PostAd.DetailsVerificationActivity" />
+        <activity android:name=".PostYourAd.PostAd.PhoneVerificationActivity" />
+        <activity android:name=".PostYourAd.PostAd.ProgressBarActivity"></activity>
     </application>
 
 </manifest>

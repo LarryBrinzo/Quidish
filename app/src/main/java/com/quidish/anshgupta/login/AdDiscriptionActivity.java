@@ -15,6 +15,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -36,8 +37,12 @@ import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.Messaging.MessageActivity;
 import com.quidish.anshgupta.login.MyAdsAndUserProfile.UserProfile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import static com.quidish.anshgupta.login.SpashScreenActivity.userads;
 
 public class AdDiscriptionActivity extends AppCompatActivity {
 
@@ -46,7 +51,7 @@ public class AdDiscriptionActivity extends AppCompatActivity {
     TextView des_layout, spectext, destext,adtitle,price,username,email,profile;
     TextView address,brand,model,includes,year,condition;
     Button call,offer;
-    String pic1="0",pic2="0",pic3="0",pic4="0",ad_no,activity;
+    String pic1="0",pic2="0",pic3="0",pic4="0",ad_no;
     ImageView image1,image2,image3,image4;
     ImageButton wish,wishr;
     ProgressDialog progressDialog;
@@ -111,9 +116,6 @@ public class AdDiscriptionActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         fuser = firebaseAuth.getCurrentUser();
 
-        if(fuser!=null)
-            userid=firebaseAuth.getCurrentUser().getUid();
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
 
@@ -135,6 +137,28 @@ public class AdDiscriptionActivity extends AppCompatActivity {
                 wishcheck();
 
             }
+        }
+
+        if(fuser!=null){
+
+            userid=firebaseAuth.getCurrentUser().getUid();
+            final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("recent");
+
+            if(!userads.containsKey(ad_no)){
+
+                if(userads.size()>10){
+
+                    List<String> l = new ArrayList<>(userads.values());
+                    String firstKey=l.get(0);
+                    reference.child(firstKey).setValue(null);
+                    reference.push().setValue(ad_no);
+                }
+
+                else{
+                    reference.push().setValue(ad_no);
+                }
+            }
+
         }
 
         final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_container);

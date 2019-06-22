@@ -30,16 +30,9 @@ public class No_InternetActivity extends AppCompatActivity {
     private void showDialog(boolean isConnected)
     {
         if (isConnected) {
-
             super.onBackPressed();
         }
 
-        else
-        {
-            Intent intent=new Intent(getApplicationContext(),No_InternetActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
 }
