@@ -8,38 +8,35 @@
     android:fitsSystemWindows="true"
     android:focusable="true"
     android:layout_height="match_parent"
-    android:background="#eef2f1"
+    android:background="#F9FAFA"
     tools:context=".Messaging.MessageActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:background="#fff"
-        android:elevation="4dp"
-        android:text=""
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        tools:layout_editor_absoluteX="109dp"
-        tools:layout_editor_absoluteY="0dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="56dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:id="@+id/backbt"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="#fff"
                 android:clickable="true"
-                android:layout_width="36dp"
-                android:layout_height="40dp"
-               >
+                android:focusable="true"
+                android:gravity="center">
 
                 <ImageView
                     android:layout_width="27dp"
                     android:layout_height="40dp"
-                    android:scaleType="centerInside"
                     android:background="@null"
+                    android:scaleType="centerInside"
                     app:srcCompat="@drawable/backb" />
 
             </LinearLayout>
@@ -89,14 +86,17 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.Toolbar>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F1F1F3"/>
+
 
     <LinearLayout
         android:id="@+id/prodcl"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="#fff"
-        android:elevation="1dp"
         android:clickable="true"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -151,11 +151,24 @@
 
     </LinearLayout>
 
+    </LinearLayout>
+
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F1F1F3"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle"
@@ -164,10 +177,12 @@
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="false"
         android:animateLayoutChanges="false"
-        android:background="#eef2f1"
+        android:background="#F9FAFA"
         android:clipToPadding="false"
         android:fillViewport="true"
          />
+
+        </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
@@ -202,14 +217,14 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:backgroundTint="#ffffff"
+                android:backgroundTint="#fff"
                 android:clickable="true"
                 android:ems="10"
                 android:hint="Type a message"
                 android:imeOptions="actionSearch"
                 android:inputType="textMultiLine"
                 android:textColor="#000000"
-                android:textColorHint="#cccccc"
+                android:textColorHint="#AAB0B4"
                 android:textColorLink="#2D3E4E"
                 android:textSize="18dp"
                 />
@@ -232,20 +247,26 @@
 
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
+        <LinearLayout
             android:id="@+id/sub"
             android:layout_width="47dp"
             android:layout_height="47dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="5dp"
+            android:orientation="horizontal"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="3dp"
             android:elevation="1dp"
-            app:fabCustomSize="50dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/sendb"
-            app:backgroundTint="#2D3E4E"
-            app:fabSize="mini" />
+            android:layout_gravity="end|bottom"
+            android:background="@drawable/circle_sell"
+            android:gravity="center"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:src="@drawable/sendb"
+                android:scaleType="centerInside"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -1,108 +1,181 @@
 package com.quidish.anshgupta.login.MyAdsAndUserProfile;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
-import com.quidish.anshgupta.login.Network.MyApplication;
-import com.quidish.anshgupta.login.Network.No_InternetActivity;
+import com.google.firebase.database.ValueEventListener;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
+import com.quidish.anshgupta.login.Messaging.MyChatActivity;
+import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
+import com.quidish.anshgupta.login.MyCustomPagerAdapter;
+import com.quidish.anshgupta.login.PostYourAd.PostAd.AdConfirmationActivity;
+import com.quidish.anshgupta.login.PostYourAd.PostAd.PhoneVerificationActivity;
+import com.quidish.anshgupta.login.PostYourAd.PostAd.SavedAddressAdapter;
 import com.quidish.anshgupta.login.R;
-import com.quidish.anshgupta.login.ZoomActivity;
 
-public class MyAdDiscriptionActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
+import java.util.ArrayList;
+import java.util.List;
 
-    LinearLayout specification, description, spec_layout;
-    View dline, sline;
-    TextView des_layout, spectext, destext,adtitle,price,address;
-    TextView brand,model,includes,year,condition;
-    Button sold;
-    String pic1,pic2,pic3,pic4;
-    Button edit;
-    ImageView image1,image2,image3,image4;
-    FirebaseAuth myfba;
-    String userid,ad_no;
-    FirebaseDatabase firebaseDatabase;
+public class MyAdDiscriptionActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    TextView  adtitle,price,des;
+    TextView address,condition,camtext;
+    String ad_no,clgid;
+    LinearLayout wish,chat;
+    ImageView chatimg,wishimg;
+    MyCustomPagerAdapter myCustomPagerAdapter;
+    Double lat=28.7041,lng=77.1025;
+    ViewPager mDemoSlider;
+    Toolbar toolbar;
+    List<String> images=new ArrayList<>();
+    LinearLayout edit,sold;
+    ProgressDialog progressDialog;
+    FirebaseAuth firebaseAuth,myfba;
     FirebaseUser fuser;
-    DatabaseReference databaseReference;
-    ProgressBar progressBar;
-   // ProgressDialog progressDialog;
+    FirebaseDatabase firebaseDatabase;
+    LinearLayout userp;
+    String uname;
+    String conf="0",soldno,uid;
+    ImageView marker;
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ads2);
 
-        checkConnection();
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        myfba=FirebaseAuth.getInstance();
-        fuser = myfba.getCurrentUser();
-        progressBar=findViewById(R.id.prog);
-      //  progressDialog =new ProgressDialog(this,R.style.MyAlertDialogStyle);
-
-        if(fuser!=null)
-            userid=myfba.getCurrentUser().getUid();
-
-        des_layout = findViewById(R.id.des_layout);
-        spec_layout = findViewById(R.id.spec_layout);
-        specification = findViewById(R.id.specifications);
-        description = findViewById(R.id.description);
-        dline = findViewById(R.id.descriptionline);
-        sline = findViewById(R.id.specificationsline);
-        destext = findViewById(R.id.destext);
-        spectext = findViewById(R.id.spectext);
-        sold = findViewById(R.id.call);
         adtitle=findViewById(R.id.adtitle);
         price=findViewById(R.id.price);
-        brand=findViewById(R.id.brand);
-        model=findViewById(R.id.model);
-        includes=findViewById(R.id.includes);
-        year=findViewById(R.id.year);
-        condition=findViewById(R.id.condition);
-        image1=findViewById(R.id.image1);
-        image2=findViewById(R.id.image2);
-        image3=findViewById(R.id.image3);
-        image4=findViewById(R.id.image4);
-        edit=findViewById(R.id.editad);
-        sold=findViewById(R.id.sold);
+        marker=findViewById(R.id.marker);
         address=findViewById(R.id.address);
+        des=findViewById(R.id.des);
+        condition=findViewById(R.id.condition);
+        sold=findViewById(R.id.sold);
+        edit=findViewById(R.id.edit);
+        camtext=findViewById(R.id.camtext);
+        wish=findViewById(R.id.wish);
+        chat=findViewById(R.id.chat);
+        chatimg=findViewById(R.id.chatimg);
+        wishimg=findViewById(R.id.wishimg);
+        userp=findViewById(R.id.userp);
+        mDemoSlider =findViewById(R.id.slider);
+        progressDialog =new ProgressDialog(this,R.style.MyAlertDialogStyle);
+        firebaseAuth = FirebaseAuth.getInstance();
+        myfba= FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        fuser = firebaseAuth.getCurrentUser();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        chatimg.setColorFilter(Color.argb(255, 255, 255, 255));
+        wishimg.setColorFilter(Color.argb(255, 255, 255, 255));
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
 
-            adtitle.setText(bundle.getString("adtitle"));
-            price.setText(bundle.getString("price"));
-            brand.setText(bundle.getString("brand"));
-            address.setText(bundle.getString("address"));
-            model.setText(bundle.getString("model"));
-            includes.setText(bundle.getString("includes"));
-            year.setText(bundle.getString("year"));
-            condition.setText(bundle.getString("condition"));
-            des_layout.setText(bundle.getString("addetails"));
-            pic1=bundle.getString("pic1");
-            pic2=bundle.getString("pic2");
-            pic3=bundle.getString("pic3");
-            pic4=bundle.getString("pic4");
-            ad_no=bundle.getString("ad_no");
+                ad_no=bundle.getString("ad_no");
+                String[] splited = ad_no.split(" ");
+
+                clgid=splited[0];
+                ad_no=splited[1];
+
+                addetailsset(ad_no);
+
+            if (bundle.containsKey("confirmation"))
+                conf="1";
+
         }
+
+
+        wish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(fuser!=null)
+                {
+                    Intent intent=new Intent(getApplicationContext(), MyWishlistActivity.class);
+                    startActivity(intent);
+                }
+
+                else
+                {
+                    Intent intent=new Intent(getApplicationContext(), LoginSignupactivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(fuser!=null)
+                {
+                    Intent intent=new Intent(getApplicationContext(), MyChatActivity.class);
+                    startActivity(intent);
+                }
+
+                else
+                {
+                    Intent intent=new Intent(getApplicationContext(),LoginSignupactivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        toolbar.setTitleTextColor(Color.BLACK);
 
         final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_container);
         collapsingToolbarLayout.setCollapsedTitleTypeface(Typeface.DEFAULT_BOLD);
@@ -118,106 +191,27 @@ public class MyAdDiscriptionActivity extends AppCompatActivity implements Connec
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbarLayout.setTitle(adtitle.getText().toString());
+                    // collapsingToolbarLayout.setTitle(adtitle.getText().toString());
                     isShow = true;
+
+                    toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
+                    chatimg.setColorFilter(Color.argb(255, 26, 40, 53));
+                    wishimg.setColorFilter(Color.argb(255, 26, 40, 53));
                 } else if(isShow) {
-                    collapsingToolbarLayout.setTitle(" ");//carefull there should a space between double quote otherwise it wont work
+                    collapsingToolbarLayout.setTitle(" ");
                     isShow = false;
+
+                    toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+
+
+                    chatimg.setColorFilter(Color.argb(255, 255, 255, 255));
+                    wishimg.setColorFilter(Color.argb(255, 255, 255, 255));
                 }
             }
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null)
-        {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //SpannableStringBuilder str = new SpannableStringBuilder(ename);
-            //str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, 10,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        }
-
-        Glide.with(getApplicationContext()).load(pic1).into(image1);
-
-        if(!pic2.equals("0"))
-        {
-            image2.setVisibility(View.VISIBLE);
-            Glide.with(getApplicationContext()).load(pic2).into(image2);
-        }
-        if(!pic3.equals("0"))
-        {
-            image3.setVisibility(View.VISIBLE);
-            Glide.with(getApplicationContext()).load(pic3).into(image3);
-        }
-        if(!pic4.equals("0"))
-        {
-            image4.setVisibility(View.VISIBLE);
-            Glide.with(getApplicationContext()).load(pic4).into(image4);
-        }
-
-        image1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),ZoomActivity.class);
-                intent.putExtra("pic",pic1);
-                startActivity(intent);
-            }
-        });
-
-        image2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),ZoomActivity.class);
-                intent.putExtra("pic",pic2);
-                startActivity(intent);
-            }
-        });
-
-        image3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),ZoomActivity.class);
-                intent.putExtra("pic",pic3);
-                startActivity(intent);
-            }
-        });
-
-        image4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(getApplicationContext(),ZoomActivity.class);
-                intent.putExtra("pic",pic4);
-                startActivity(intent);
-            }
-        });
-
-        databaseReference=FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Posted Ad").child(ad_no);
-
-        specification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sline.setVisibility(View.VISIBLE);
-                dline.setVisibility(View.GONE);
-                des_layout.setVisibility(View.GONE);
-                spec_layout.setVisibility(View.VISIBLE);
-
-                destext.setTextColor(Color.BLACK);
-                spectext.setTextColor(Color.rgb(35, 197, 160));
-            }
-        });
-
-        description.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dline.setVisibility(View.VISIBLE);
-                sline.setVisibility(View.GONE);
-                spec_layout.setVisibility(View.GONE);
-                des_layout.setVisibility(View.VISIBLE);
-
-                spectext.setTextColor(Color.BLACK);
-                destext.setTextColor(Color.rgb(35, 197, 160));
-            }
-        });
 
         sold.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,15 +239,6 @@ public class MyAdDiscriptionActivity extends AppCompatActivity implements Connec
             public void onClick(View view) {
 
                 Intent intent=new Intent(getApplicationContext(),EditAdActivity.class);
-                intent.putExtra("addetails",des_layout.getText().toString());
-                intent.putExtra("brand", brand.getText().toString());
-                intent.putExtra("price", price.getText().toString());
-                intent.putExtra("adtitle", adtitle.getText().toString());
-                intent.putExtra("address", address.getText().toString());
-                intent.putExtra("model", model.getText().toString());
-                intent.putExtra("includes", includes.getText().toString());
-                intent.putExtra("year", year.getText().toString());
-                intent.putExtra("condition", condition.getText().toString());
                 intent.putExtra("ad_no", ad_no);
                 startActivity(intent);
 
@@ -265,55 +250,146 @@ public class MyAdDiscriptionActivity extends AppCompatActivity implements Connec
 
 
     public void itemsold(){
-        progressBar.setVisibility(View.VISIBLE);
         DatabaseReference current_user;
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(ad_no).child("sold");
+        current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(clgid).child(ad_no).child("sold");
         current_user.setValue("1");
 
-        progressBar.setVisibility(View.GONE);
         finish();
     }
 
+    public void addetailsset(String ad_no) {
+
+        DatabaseReference refer;
+        refer=firebaseDatabase.getReference().child("Ads").child(clgid).child(ad_no);
+        refer.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                String brand=(dataSnapshot.child("brand").getValue(String.class));
+                String name=(dataSnapshot.child("ad_title").getValue(String.class));
+
+                SpannableString ss1=  new SpannableString(brand);
+                ss1.setSpan(new StyleSpan(Typeface.BOLD), 0, ss1.length(), 0);
+
+                ss1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, ss1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                Spannable wordTwo = new SpannableString(name);
+
+                wordTwo.setSpan(new ForegroundColorSpan(Color.LTGRAY), 0, wordTwo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                adtitle.append(ss1);
+                adtitle.append(" ");
+                adtitle.append(wordTwo);
+
+                String image=(dataSnapshot.child("image").getValue(String.class));
+                String[] splited = image.split(" ");
+
+                for(int i=0;i<splited.length;i++)
+                    images.add(splited[i]);
+
+                myCustomPagerAdapter = new MyCustomPagerAdapter(MyAdDiscriptionActivity.this, images);
+                mDemoSlider.setAdapter(myCustomPagerAdapter);
+                TabLayout tabLayout = findViewById(R.id.tab_layout);
+                tabLayout.setupWithViewPager(mDemoSlider, true);
+
+
+                adtitle.setText(dataSnapshot.child("ad_title").getValue(String.class));
+                price.setText(dataSnapshot.child("price").getValue(String.class));
+                address.setText(dataSnapshot.child("Address_Complete").getValue(String.class));
+                camtext.setText(dataSnapshot.child("Address_Nick").getValue(String.class).toUpperCase());
+
+                des.setText(dataSnapshot.child("ad_details").getValue(String.class));
+
+                condition.setText(dataSnapshot.child("condition").getValue(String.class).toUpperCase());
+
+                lat=Double.parseDouble(dataSnapshot.child("Address_Lat").getValue(String.class));
+                lng=Double.parseDouble(dataSnapshot.child("Address_Lng").getValue(String.class));
+
+                CameraUpdate center=
+                        CameraUpdateFactory.newLatLng(new LatLng(lat,
+                                lng));
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(18);
+
+                mMap.moveCamera(center);
+                mMap.animateCamera(zoom);
+
+                addCustomMarker();
+
+                uname=dataSnapshot.child("name").getValue(String.class);
+
+                uid = dataSnapshot.child("userid").getValue(String.class);
+                soldno=dataSnapshot.child("sold").getValue(String.class);
+
+                String shownumber=(dataSnapshot.child("shownumber").getValue(String.class));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                progressDialog.dismiss();
+            }
+        });
+
+    }
+
+    private void addCustomMarker() {
+
+        if (mMap == null) {
+            return;
+        }
+
+        // adding a marker on map with image from  drawable
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(lat,
+                        lng))
+                .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.marker)));
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        CameraUpdate center=
+                CameraUpdateFactory.newLatLng(new LatLng(28.7041,
+                        77.1025));
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(18);
+
+        mMap.moveCamera(center);
+        mMap.animateCamera(zoom);
+
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+    }
+
+
+
     @Override
     public void onBackPressed() {
+        if(conf.equals("0"))
         super.onBackPressed();
+
+        else {
+            Intent intent = new Intent(MyAdDiscriptionActivity.this, BottomNavigationDrawerActivity.class);
+            startActivity(intent);
+            finishAffinity();
+        }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-
-    private void checkConnection() {
-        boolean isConnected = ConnectivityReceiver.isConnected();
-        showDialog(isConnected);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // register connection status listener
-        MyApplication.getInstance().setConnectivityListener(this);
-    }
-
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showDialog(isConnected);
-    }
-
-    private void showDialog(boolean isConnected)
-    {
-        if (!isConnected) {
-
-            Intent intent=new Intent(getApplicationContext(),No_InternetActivity.class);
-            startActivity(intent);
-
-
-        }
     }
 
 }

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="#fff"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/layoutorg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/backbt"
+                android:clickable="true"
+                android:layout_width="56dp"
+                android:background="?attr/selectableItemBackground"
+                android:layout_height="56dp"
+                android:gravity="center"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="27dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerInside"
+                    android:background="@null"
+                    app:srcCompat="@drawable/backb" />
+
+            </LinearLayout>
+
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+
+            <ScrollView
+                android:id="@+id/scrollView2"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:descendantFocusability="afterDescendants"
+                android:fillViewport="true"
+                android:isScrollContainer="true"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/quidif"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign up to get personalized experience &amp; quick ad posting"
+                        android:textColor="#414754"
+                        android:gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:textSize="15dp"
+                        android:layout_marginLeft="45dp"
+                        android:layout_marginRight="45dp"/>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="- Sign up under 10 secs -"
+                        android:layout_marginTop="50dp"
+                        android:textColor="#7f828d"
+                        android:textSize="13dp"
+                        android:layout_marginLeft="9dp"
+                        android:layout_marginRight="9dp"/>
+
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="18dp"
+                        android:orientation="horizontal"
+                       >
+
+                        <LinearLayout
+                            android:id="@+id/facebook"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/rect_border"
+                            android:gravity="center">
+
+
+                            <ImageView
+                                android:layout_width="17sp"
+                                android:layout_height="17sp"
+                                android:src="@drawable/fbimg"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp"
+                                android:scaleType="centerInside"/>
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FACEBOOK"
+                                android:textColor="#696e79"
+                                android:textStyle="bold"
+                                android:layout_marginLeft="10dp"
+                                android:textSize="15dp"/>
+
+
+                        </LinearLayout>
+
+
+
+                        <LinearLayout
+                            android:id="@+id/google"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"
+                            android:background="@drawable/rect_border"
+                            android:gravity="center">
+
+
+                            <ImageView
+                                android:layout_width="17sp"
+                                android:layout_height="17sp"
+                                android:src="@drawable/gimg"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="15dp"
+                                android:scaleType="centerInside"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="GOOGLE"
+                                android:textColor="#696e79"
+                                android:textStyle="bold"
+                                android:layout_marginLeft="10dp"
+                                android:textSize="15dp"/>
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="- Or create account -"
+                        android:layout_marginTop="30dp"
+                        android:textColor="#7f828d"
+                        android:textSize="13dp"
+                        android:layout_marginLeft="9dp"
+                        android:layout_marginRight="9dp"/>
+
+
+                <LinearLayout
+                    android:id="@+id/email2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/rect_border"
+                    android:gravity="center">
+
+
+                    <ImageView
+                        android:layout_width="25sp"
+                        android:layout_height="23sp"
+                        android:src="@drawable/mail"
+                        android:tint="#b3b5ba"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:scaleType="centerInside"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EMAIL ADDRESS"
+                        android:textColor="#696e79"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="5dp"
+                        android:textSize="15dp"/>
+
+                </LinearLayout>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="35dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/sign"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:textSize="13dp"
+                            android:text="Already have an account?"
+                            android:textColor="#7f828d" />
+
+                        <TextView
+                            android:id="@+id/login"
+                            android:layout_width="wrap_content"
+                            android:layout_height="25dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:clickable="true"
+                            android:text=" Login "
+                            android:textColor="#596BB7"
+                            android:textSize="13dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/now"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:text="now"
+                            android:textSize="13dp"
+                            android:textColor="#7f828d" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

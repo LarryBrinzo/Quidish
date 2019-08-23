@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,12 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
 import com.quidish.anshgupta.login.R;
 
 public class AddInstituteActivity extends AppCompatActivity {
@@ -32,6 +26,7 @@ public class AddInstituteActivity extends AppCompatActivity {
     int oncamp=0,offcamp=0;
     int post=1;
     String instid;
+    LinearLayout back;
 
     public static Activity fa;
 
@@ -51,8 +46,16 @@ public class AddInstituteActivity extends AppCompatActivity {
         offcampus=findViewById(R.id.offcampus);
         ontext=findViewById(R.id.ontext);
         offtext=findViewById(R.id.offtext);
+        back=findViewById(R.id.backbt);
 
-        inst.setText(HomeActivity.userclg);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
+        inst.setText(HomeFragment.userclg);
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         instid=pref.getString("userinstituteid", null);
@@ -70,7 +73,7 @@ public class AddInstituteActivity extends AppCompatActivity {
                post=1;
 
             else
-                inst.setText(HomeActivity.userclg);
+                inst.setText(HomeFragment.userclg);
         }
 
         oncapus.setOnClickListener(new View.OnClickListener() {
@@ -211,6 +214,11 @@ public class AddInstituteActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

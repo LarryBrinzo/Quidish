@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="0dp"
-    android:background="#eef2f1"
+    android:background="#F9FAFA"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView

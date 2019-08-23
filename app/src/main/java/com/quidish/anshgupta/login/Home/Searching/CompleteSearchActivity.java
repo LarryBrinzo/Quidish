@@ -1,12 +1,9 @@
 package com.quidish.anshgupta.login.Home.Searching;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -16,16 +13,16 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,47 +32,50 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.AdModel;
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.AllCategoriesAdapter;
+import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
 import com.quidish.anshgupta.login.R;
-import com.quidish.anshgupta.login.SpashScreenActivity;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 
 public class CompleteSearchActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener,Comparator<Pair<String,Integer>> {
 
-    SearchView search;
-    LinearLayout back,viewed;
+    EditText search;
+    ProgressBar searchprog;
+    LinearLayout back,viewed,rest;
     List<Pair<String,Integer>> sugglist=new ArrayList<>();
-    List<Pair<String,Integer>> list=new ArrayList<>();
     public static List<Pair<String,Pair<String,String>>> recsugglist=new ArrayList<>();
     NestedScrollView scrollView;
-    LinearLayout books,mobile,cycle,electronics;
+    ImageView cancel;
+    int ct = 0;
     ProgressBar progbar;
     FirebaseAuth firebaseAuth;
     List<String> userads=new ArrayList<>();
     FirebaseUser fuser;
     public static TextView edit;
+    TextView noresult;
     public static LinearLayout recent;
     ValueEventListener eventListener;
     List<AdModel> listitms=new ArrayList<>();
     CoordinatorLayout coordinatorLayout;
-    private static final String ACTION_VOICE_SEARCH = "com.google.android.gms.actions.SEARCH_ACTION";
-    public static RecyclerView suggestionrecycle,horzontalrecycle,recycleitm;
+    public static RecyclerView suggestionrecycle,horzontalrecycle,recycleitm,categoryrecycle;
     SuggestionAdapter suggestionAdapter;
     public static RecentSearchAdapter recyclerAdapterRecent;
     ImageView fadeimage;
     ItemAdapter recycleitmAdapter;
     private int overallXScroll = 0;
     int bkct=0;
+    private List<Pair<String,String>> catlist=new ArrayList<>();
     String userid;
     float alpha = 1.0f;
     float newAlpha = 1.0f;
+    AllCategoriesAdapter allCategoriesAdapter;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -86,14 +86,10 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
         coordinatorLayout=findViewById(R.id.coordinator);
         checkConnection();
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         search = findViewById(R.id.search);
-        assert searchManager != null;
-        search.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        search.setIconifiedByDefault(false);
-        search.setQueryRefinementEnabled(true);
-
+        categoryrecycle =findViewById(R.id.categoryrecycle);
         back=findViewById(R.id.backbt);
+        searchprog = findViewById(R.id.searchprog);
         scrollView=findViewById(R.id.scrollView2);
         progbar=findViewById(R.id.prog);
         suggestionrecycle =findViewById(R.id.suggestion);
@@ -102,11 +98,26 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
         recycleitm=findViewById(R.id.itmrecycle);
         fadeimage=findViewById(R.id.imageView4);
         recent=findViewById(R.id.recent);
-        books=findViewById(R.id.books);
-        cycle=findViewById(R.id.cycle);
-        mobile=findViewById(R.id.mobile);
-        electronics=findViewById(R.id.electronics);
         viewed=findViewById(R.id.viewed);
+        rest = findViewById(R.id.rest);
+        noresult = findViewById(R.id.noresult);
+        cancel=findViewById(R.id.cancel);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search.setText("");
+            }
+        });
+
+
+        allCategoriesAdapter = new AllCategoriesAdapter(catlist,CompleteSearchActivity.this);
+        GridLayoutManager recycecat = new GridLayoutManager(getApplicationContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        categoryrecycle.setLayoutManager(recycecat);
+        categoryrecycle.setLayoutManager(recycecat);
+        categoryrecycle.setAdapter(allCategoriesAdapter);
+
+        addCategories();
 
         recyclerAdapterRecent = new RecentSearchAdapter(recsugglist,CompleteSearchActivity.this);
         RecyclerView.LayoutManager recycesugg = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -115,6 +126,37 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
         horzontalrecycle.setAdapter(recyclerAdapterRecent);
 
         displayrecentsearch();
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                int serachnumber=pref.getInt("serachnumber", 0);
+
+                for(int i=serachnumber;i>=1;i--){
+
+                    String itm="recent"+(i),img="recentimg"+(i);
+
+                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor searchhint = pref.edit();
+
+                    searchhint.remove(itm);
+                    searchhint.remove(img);
+
+                    searchhint.apply();
+
+                }
+
+                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor searchhint = pref.edit();
+                searchhint.putInt("serachnumber",0);
+                searchhint.apply();
+
+                recent.setVisibility(View.GONE);
+                recsugglist.clear();
+
+
+            }
+        });
 
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -146,7 +188,6 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
             }
         });
 
-        suggestionrecycle.setNestedScrollingEnabled(false);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,12 +196,7 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
             }
         });
 
-        suggestionAdapter = new SuggestionAdapter(sugglist,CompleteSearchActivity.this);
-        RecyclerView.LayoutManager recyceSugg = new GridLayoutManager(CompleteSearchActivity.this,1);
-        suggestionrecycle.setLayoutManager(recyceSugg);
-        recyceSugg.setAutoMeasureEnabled(false);
-        suggestionrecycle.setItemAnimator( new DefaultItemAnimator());
-        suggestionrecycle.setAdapter(suggestionAdapter);
+
 
         recycleitmAdapter = new ItemAdapter(listitms,CompleteSearchActivity.this);
         RecyclerView.LayoutManager recyceitms = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -208,187 +244,193 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
         viewed.setVisibility(View.GONE);
 
         if(fuser!=null)
-        {
-            userid= firebaseAuth.getCurrentUser().getUid();
-            additm();
-        }
+        userid= firebaseAuth.getCurrentUser().getUid();
+        additm();
 
-        handleVoiceSearch(getIntent());
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
 
-            String s = bundle.getString("active");
+        suggestionAdapter = new SuggestionAdapter(sugglist, CompleteSearchActivity.this);
+        RecyclerView.LayoutManager recyceSugg = new GridLayoutManager(CompleteSearchActivity.this, 1);
+        suggestionrecycle.setLayoutManager(recyceSugg);
+        recyceSugg.setAutoMeasureEnabled(false);
+        suggestionrecycle.setItemAnimator(new DefaultItemAnimator());
+        suggestionrecycle.setAdapter(suggestionAdapter);
 
-            if(s != null && s.equals("1")) {
 
-                String ss = bundle.getString("searchitem");
 
-                if(ss != null && !ss.isEmpty()) {
-                    String x=ss;
-                    search.setQuery(x,false);
-                    ss = ss.toLowerCase();
 
-                    Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                    intent.putExtra("searchstring", ss);
-                    intent.putExtra("click", "1");
-                    startActivity(intent);
+        search.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence st, int start, int before, int count) {
+
+                String newText = st.toString();
+
+                if (newText.length() == 0) {
+                    suggestionrecycle.setVisibility(View.GONE);
+                    rest.setVisibility(View.VISIBLE);
+
+                    sugglist.clear();
+                    suggestionrecycle.removeAllViewsInLayout();
+                    suggestionAdapter.notifyDataSetChanged();
+                    searchprog.setVisibility(View.GONE);
+                    cancel.setVisibility(View.GONE);
+                    noresult.setVisibility(View.GONE);
                 }
-            }
-        }
 
-        books.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String ss = "book";
-                ss = ss.toLowerCase();
+                newText = newText.trim();
+                newText = newText.toLowerCase();
 
-                Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                intent.putExtra("searchstring", ss);
-                intent.putExtra("click", "1");
-                startActivity(intent);
+                if (newText.length() == 1) {
+                    searchprog.setVisibility(View.GONE);
+                    cancel.setVisibility(View.VISIBLE);
+                    noresult.setVisibility(View.GONE);
+
+                }
+
+                if (newText.length() > 1) {
+
+                    searchprog.setVisibility(View.VISIBLE);
+
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                    String userclgid=pref.getString("userinstituteid", null);
+
+                    DatabaseReference ref;
+                    ref = FirebaseDatabase.getInstance().getReference().child("Ads").child(userclgid);
+
+                    final String finalNewText = newText;
+                    ref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            ct = 0;
+
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+
+                                String actualproductname=dataSnapshot1.child("ad_title").getValue(String.class);
+                                String actualproductbrand=dataSnapshot1.child("brand").getValue(String.class);
+                                String actualproductcat=dataSnapshot1.child("category").getValue(String.class);
+
+                                stringStartsWith(actualproductname,finalNewText);
+                                stringStartsWith(actualproductbrand,finalNewText);
+                                stringStartsWith(actualproductcat,finalNewText);
+
+                            }
+
+                            searchprog.setVisibility(View.GONE);
+                            cancel.setVisibility(View.VISIBLE);
+                            suggestionrecycle.setVisibility(View.VISIBLE);
+                            rest.setVisibility(View.GONE);
+
+                            if (sugglist.size() == 0) {
+                                noresult.setVisibility(View.VISIBLE);
+                                noresult.setText("Sorry, we couldn't find result matching " + "\"" + search.getText() + "\"");
+                            } else {
+                                noresult.setVisibility(View.GONE);
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+
+                    suggestionAdapter.notifyDataSetChanged();
+
+                }
+
             }
+
+
         });
 
-        cycle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String ss = "cycle";
-                ss = ss.toLowerCase();
-
-                Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                intent.putExtra("searchstring", ss);
-                intent.putExtra("click", "1");
-                startActivity(intent);
-            }
-        });
-
-        mobile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String ss = "mobile";
-                ss = ss.toLowerCase();
-
-                Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                intent.putExtra("searchstring", ss);
-                intent.putExtra("click", "1");
-                startActivity(intent);
-            }
-        });
-
-        electronics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String ss = "electronics";
-                ss = ss.toLowerCase();
-
-                Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                intent.putExtra("searchstring", ss);
-                intent.putExtra("click", "1");
-                startActivity(intent);
-            }
-        });
 
 
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
+    public void addCategories(){
 
-                newText=newText.trim();
-                newText=newText.toLowerCase();
+        catlist.add(new Pair("Mobile Phones & Tablets","mobile_cat"));
+        catlist.add(new Pair("Electronics","electronics"));
+        catlist.add(new Pair("Bicycles","bicycle"));
+        catlist.add(new Pair("Furniture","furniture"));
+        catlist.add(new Pair("Entertainment","entertainment"));
+        catlist.add(new Pair("Photography","photo"));
+        catlist.add(new Pair("Books & Stationery","books_cat"));
+        catlist.add(new Pair("Home Appliances","ironing"));
+        catlist.add(new Pair("Men's Fashion","men"));
+        catlist.add(new Pair("Women's Fashion","women"));
 
-                list.clear();
+        allCategoriesAdapter.notifyDataSetChanged();
+
+    }
+
+
+    public void stringStartsWith(String name, String finalNewText){
+
+        name= name.toLowerCase();
+
+        if(name.length()> finalNewText.length() && (name.startsWith(finalNewText))){
+
+            if(ct==0){
+                ct=1;
+
+                sugglist.clear();
                 suggestionrecycle.removeAllViewsInLayout();
                 suggestionAdapter.notifyDataSetChanged();
+            }
 
-                if(newText.length()>0) {
+            if(sugglist.size()==0)
+                sugglist.add(new Pair(name,finalNewText.length()));
 
-                    for (String s : SpashScreenActivity.searchdict) {
+            else
+                sugglist.add(new Pair(name,finalNewText.length()));
 
-                        if(s.length()>newText.length() && s.startsWith(newText) && list.size()<=5)
-                            list.add(new Pair <> (s,newText.length()));
+        }
 
-                        if(list.size()>5)
-                            break;
-                    }
+        else if(name.length()> finalNewText.length() && (name.contains(finalNewText))){
 
-                    if(list.size()>0) {
+            if(ct==0){
+                ct=1;
+
+                sugglist.clear();
+                suggestionrecycle.removeAllViewsInLayout();
+                suggestionAdapter.notifyDataSetChanged();
+            }
+
+            sugglist.add(new Pair(name,0));
+
+        }
+
+        else {
+
+            String[] splited = finalNewText.split(" ");
+
+            for (String aSplited : splited) {
+
+                if (name.length() > aSplited.length() && name.contains(aSplited)){
+
+                    if(ct==0){
+                        ct=1;
+
                         sugglist.clear();
                         suggestionrecycle.removeAllViewsInLayout();
                         suggestionAdapter.notifyDataSetChanged();
-
-                        sugglist.addAll(list);
-                        CompleteSearchActivity ss = new CompleteSearchActivity();
-                        Collections.sort(sugglist, ss);
-                        suggestionAdapter.notifyDataSetChanged();
                     }
 
-                    else {
-
-                        for (String s : SpashScreenActivity.searchdict) {
-
-                            if(s.length()>newText.length() && s.contains(newText) && list.size()<=5)
-                                list.add(new Pair <> (s,0));
-
-                            if(list.size()>5)
-                                break;
-                        }
-
-                        String[] splited = newText.split(" ");
-
-                        for(int j=0;j<splited.length;j++){
-
-                            for (String s : SpashScreenActivity.searchdict) {
-
-                               if(s.length()>splited[j].length() && s.contains(splited[j]) && list.size()<=5)
-                                   list.add(new Pair <> (s,0));
-
-                                if(list.size()>5)
-                                    break;
-                            }
-
-                            if(list.size()>5)
-                                break;
-                        }
-
-                        if(list.size()>0){
-                            sugglist.clear();
-                            suggestionrecycle.removeAllViewsInLayout();
-                            suggestionAdapter.notifyDataSetChanged();
-
-                            sugglist.addAll(list);
-                            CompleteSearchActivity ss = new CompleteSearchActivity();
-                            Collections.sort(sugglist, ss);
-                            suggestionAdapter.notifyDataSetChanged();
-                        }
-
-                    }
+                    sugglist.add(new Pair(name,0));
                 }
-                return false;
             }
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                String s=query;
-
-                if(!s.isEmpty())
-                {
-                    s=s.toLowerCase();
-                    Intent intent=new Intent(getApplicationContext(),SearchShowActivity.class);
-                    intent.putExtra("searchstring", s);
-                    if(sugglist.size()>0 && list.size()==0)
-                        intent.putExtra("sugghstring", sugglist.get(0).first);
-                    startActivity(intent);
-                    return true;
-                }
-
-                return false;
-            }
-
-        });
-
+        }
 
     }
 
@@ -400,32 +442,23 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         int serachnumber=pref.getInt("serachnumber", 0);
 
-        int ind=0;
-
         for(int i=serachnumber;i>=1;i--){
-            String srchkey="recent"+Integer.toString(i);
-            String srchimgkey="recentimg"+Integer.toString(i);
+            String srchkey="recent"+(i);
+            String srchimgkey="recentimg"+(i);
 
             String searchitm=pref.getString(srchkey, null);
             String searchimgitm=pref.getString(srchimgkey, null);
 
-            if(searchitm!=null && searchimgitm!=null){
-            recsugglist.add(new Pair <> (Integer.toString(i),new Pair <>(searchitm, searchimgitm)));
-            recyclerAdapterRecent.notifyItemInserted(recsugglist.size() - 1);
+            if(searchitm!=null){
+                if(searchimgitm==null){
+                    recsugglist.add(new Pair <> (Integer.toString(i),new Pair <>(searchitm, "1")));
+                    recyclerAdapterRecent.notifyItemInserted(recsugglist.size() - 1);}
 
-                @SuppressLint("CommitPrefEdits") SharedPreferences.Editor searchhint = pref.edit();
+                else {
+                    recsugglist.add(new Pair <> (Integer.toString(i),new Pair <>(searchitm, searchimgitm)));
+                    recyclerAdapterRecent.notifyItemInserted(recsugglist.size() - 1);
+                }
 
-                String srchitm="recent"+recsugglist.get(ind).first;
-                searchhint.putString(srchitm,recsugglist.get(ind).second.first);
-
-                String srchimg="recentimg"+recsugglist.get(ind).first;
-                searchhint.putString(srchimg,recsugglist.get(ind).second.second);
-                searchhint.apply();
-
-                ind++;
-
-                searchhint.putInt("serachnumber",recsugglist.size());
-                searchhint.apply();
             }
         }
 
@@ -434,43 +467,29 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
     }
 
 
-    private void handleVoiceSearch(Intent intent) {
-        if (intent != null && ACTION_VOICE_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            search.setQuery(query, true);
-
-            Intent intent2=new Intent(getApplicationContext(),SearchShowActivity.class);
-            intent2.putExtra("searchstring", query);
-            startActivity(intent);
-        }
-    }
-
 
     public void additm(){
 
-        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("recent");
+        userads.clear();
 
-        eventListener=reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        int serachnumber=pref.getInt("recentadnumber", 0);
 
-                userads.clear();
+        for(int i=serachnumber;i>=1;i--){
+            String srchkey="recentad"+(i);
 
-                for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()) {
+            String searchitm=pref.getString(srchkey, null);
 
-                    userads.add(dataSnapshot1.getValue(String.class));
-                }
+            if(searchitm!=null){
+                userads.add(searchitm);
 
-                addinsert();
-
-                if(userads.size()>1)
-                viewed.setVisibility(View.VISIBLE);
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        addinsert();
+
+        if(userads.size()>=1)
+            viewed.setVisibility(View.VISIBLE);
 
     }
 
@@ -484,10 +503,10 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
 
                 listitms.clear();
-                AdModel xx=new AdModel();
-                xx.setAdno("-1");
-
-                listitms.add(xx);
+//                AdModel xx=new AdModel();
+//                xx.setAdno("-1");
+//
+//                listitms.add(xx);
 
                 int si=userads.size();
 
@@ -495,9 +514,16 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
 
                     String ad_no = userads.get(i);
 
-                    String usid = dataSnapshot.child(ad_no).child("userid").getValue(String.class);
+                    String[] splited = ad_no.split(" ");
+                    ad_no=splited[1];
+                    String clgid=splited[0];
 
-                    if (HomeActivity.fuser != null && HomeActivity.userid.equals(usid)) {
+                    String usid = dataSnapshot.child(clgid).child(ad_no).child("userid").getValue(String.class);
+                    String adsold = dataSnapshot.child(clgid).child(ad_no).child("sold").getValue(String.class);
+
+                    if (adsold == null || adsold.equals("1")){}
+
+                    else if (HomeFragment.fuser != null && HomeFragment.userid.equals(usid)) {
                     }
 
                     else{
@@ -507,25 +533,26 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
                         if(bkct>=6)
                             break;
 
-                        String adtitle = dataSnapshot.child(ad_no).child("ad_title").getValue(String.class);
-                        String price = dataSnapshot.child(ad_no).child("price").getValue(String.class);
-                        String brand = dataSnapshot.child(ad_no).child("brand").getValue(String.class);
-                        String image1 = dataSnapshot.child(ad_no).child("image1").getValue(String.class);
+                        String adtitle = dataSnapshot.child(clgid).child(ad_no).child("ad_title").getValue(String.class);
+                        String price = dataSnapshot.child(clgid).child(ad_no).child("price").getValue(String.class);
+                        String brand = dataSnapshot.child(clgid).child(ad_no).child("brand").getValue(String.class);
+                        String image1 = dataSnapshot.child(clgid).child(ad_no).child("image").getValue(String.class);
 
-                        price = "₹" + price;
 
                         AdModel fire = new AdModel();
+
+                        String[] splited2 = image1.split(" ");
 
                         fire.setPrice(price);
                         fire.setTitle(adtitle);
                         fire.setBrand(brand);
-                        fire.setAdno(ad_no);
+                        fire.setAdno(clgid+" "+ad_no);
                         fire.setActivity("2");
                         fire.setSold("0");
                         fire.setUser(usid);
-                        fire.setUrl1(image1);
+                        fire.setUrl1(splited2[0]);
 
-                        if(HomeActivity.listwish.contains(ad_no))
+                        if(HomeFragment.listwish.contains(ad_no))
                             fire.setWish("1");
 
                         else
@@ -550,7 +577,7 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
 
     @Override
     public int compare(Pair<String,Integer> p1, Pair<String,Integer> p2) {
-        return p1.first.length() - p2.first.length();
+        return p1.second - p2.second;
     }
 
     @Override

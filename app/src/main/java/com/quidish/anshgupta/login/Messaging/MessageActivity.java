@@ -91,8 +91,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-import static com.quidish.anshgupta.login.PostYourAd.AdpostActivity.MEDIA_TYPE_IMAGE;
-
 class messageadapter extends RecyclerView.Adapter<messageadapter.MyHoder>{
 
     List<messagemodel> list;
@@ -474,7 +472,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
     LinearLayout back,addimg,prodcl,userp;
     ProgressDialog progressDialog;
     String user1,user2,dt2;
-    FloatingActionButton send;
+    LinearLayout send;
     messageadapter recyclerAdapter;
     List<messagemodel> allmsg=new ArrayList<>();
     TextView usern,title,pricet,profile,lasts;
@@ -487,8 +485,9 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
     String img,num1="0",num2="0",act,adtitle,price,uname;
     private ActionModeCallback actionModeCallback;
     private ActionMode actionMode;
-    String offer="0";
+    String offer="0",clgid;
     private static final int PICK_FROM_GALLERY = 2;
+    public static final int MEDIA_TYPE_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -544,6 +543,12 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             ad_no=bundle.getString("ad_no");
+
+            String[] splited = ad_no.split(" ");
+
+            clgid=splited[0];
+            ad_no=splited[1];
+
             usertype=bundle.getString("usertype");
             act=bundle.getString("act");
             uid=bundle.getString("uid");
@@ -557,7 +562,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getApplicationContext(),AdDiscriptionActivity.class);
-                intent.putExtra("msgad_no", ad_no);
+                intent.putExtra("msgad_no", clgid+" "+ad_no);
                 startActivity(intent);
             }
         });
@@ -576,7 +581,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
         recycle.setNestedScrollingEnabled(false);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        ref=firebaseDatabase.getReference().child("Ads").child(ad_no);
+        ref=firebaseDatabase.getReference().child("Ads").child(clgid).child(ad_no);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         linearLayoutManager.setReverseLayout(true);
@@ -607,12 +612,17 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
                     }
                 });
 
-                img=dataSnapshot.child("image1").getValue(String.class);
+                img=dataSnapshot.child("image").getValue(String.class);
+
+                String[] splited2 = img.split(" ");
+                img=splited2[0];
+
                 adtitle=dataSnapshot.child("ad_title").getValue(String.class);
                 price=dataSnapshot.child("price").getValue(String.class);
-                price="₹ "+price;
 
-                Glide.with(getApplicationContext()).load(img).into(pic);
+                String[] splited = img.split(" ");
+
+                Glide.with(getApplicationContext()).load(splited[0]).into(pic);
                 usern.setText(uname);
                 title.setText(adtitle);
                 pricet.setText(price);
@@ -622,13 +632,13 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
                 if(usertype.equals("buyer"))
                 {
-                    userinter=ad_no+" "+senduid;
+                    userinter=clgid+" "+ad_no+" "+senduid;
                     buyerid=senduid;
                 }
 
                 else
                 {
-                    userinter=ad_no+" "+uid;
+                    userinter=clgid+" "+ad_no+" "+uid;
                     buyerid=uid;
                 }
 
@@ -801,7 +811,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
     public void msgnoset(){
 
-        DatabaseReference usermsg = FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg");
+        DatabaseReference usermsg = FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg");
 
         usermsg.addValueEventListener(new ValueEventListener() {
             @Override
@@ -812,7 +822,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
                  if (snapshot.hasChild(userinter)) {
                     DatabaseReference usermsg2;
-                    usermsg2= FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg").child(userinter).child("msgno");
+                    usermsg2= FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg").child(userinter).child("msgno");
                     usermsg2.setValue("0");
                 }
             }
@@ -842,7 +852,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
                             if(!msval.equals(activityno))
                                 continue;
 
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Message").child(ad_no).child(buyerid).child(allmsg.get(selectedItemPositions.get(i)).getKey());
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Message").child(clgid+" "+ad_no).child(buyerid).child(allmsg.get(selectedItemPositions.get(i)).getKey());
                             ref.setValue(null);
                             allmsg.remove(selectedItemPositions.get(i));
                             recyclerAdapter.removeData(selectedItemPositions.get(i));
@@ -879,7 +889,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
     public void messagemethod(){
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Message").child(ad_no).child(buyerid);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Message").child(clgid+" "+ad_no).child(buyerid);
 
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -899,7 +909,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
                         DatabaseReference current_user = null;
                          if(keyvalue != null)
-                        current_user= FirebaseDatabase.getInstance().getReference().child("Message").child(ad_no).child(buyerid).child(keyvalue);
+                        current_user= FirebaseDatabase.getInstance().getReference().child("Message").child(clgid+" "+ad_no).child(buyerid).child(keyvalue);
 
                         if(usertype != null && current_user != null && usertype.equals("buyer") && mtype.equals("1")) //1
                         {
@@ -930,7 +940,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
                     if(allmsg.size()>0)
                     {
                     DatabaseReference usermsg2;
-                    usermsg2= FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg").child(userinter).child("lastmsg");
+                    usermsg2= FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg").child(userinter).child("lastmsg");
                     usermsg2.setValue(allmsg.get(allmsg.size()-1).getMsg());}
 
                     printmsg();
@@ -948,10 +958,10 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
         if(allmsg.size()==0)
         {
             DatabaseReference current_user;
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Allmsg").child(userinter);
             current_user.setValue(null);
 
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg").child(userinter);
             current_user.setValue(null);
 
         }
@@ -990,7 +1000,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
         chdate=chdate+" "+strDate2;
 
         DatabaseReference current_user;
-        current_user= FirebaseDatabase.getInstance().getReference().child("Message").child(ad_no).child(buyerid);
+        current_user= FirebaseDatabase.getInstance().getReference().child("Message").child(clgid+" "+ad_no).child(buyerid);
         current_user.push().setValue(fmsg);
 
         if(usertype.equals("buyer"))
@@ -1000,7 +1010,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
             num1=Integer.toString(x);
 
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Allmsg").child(userinter);
             current_user.child("time").setValue(mapdate);
             current_user.child("chtime").setValue(chdate);
             current_user.child("msgno").setValue(num1);
@@ -1015,7 +1025,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
             current_user.child("img").setValue(img);
             current_user.child("name").setValue(user2);
 
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg").child(userinter);
             current_user.child("time").setValue(mapdate);
             current_user.child("chtime").setValue(chdate);
             current_user.child("msgno").setValue(num2);
@@ -1042,7 +1052,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
 
             num1=Integer.toString(x);
 
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(uid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(uid).child("Allmsg").child(userinter);
             current_user.child("time").setValue(mapdate);
             current_user.child("chtime").setValue(chdate);
             current_user.child("msgno").setValue(num1);
@@ -1057,7 +1067,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
             current_user.child("img").setValue(img);
             current_user.child("name").setValue(user2);
 
-            current_user= FirebaseDatabase.getInstance().getReference().child("users").child(senduid).child("Allmsg").child(userinter);
+            current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(senduid).child("Allmsg").child(userinter);
             current_user.child("time").setValue(mapdate);
             current_user.child("chtime").setValue(chdate);
             current_user.child("msgno").setValue(num2);
@@ -1129,21 +1139,21 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
     public void messagegiver(final String userid) {
 
         DatabaseReference refer;
-        refer=firebaseDatabase.getReference().child("users").child(userid);
+        refer=firebaseDatabase.getReference().child("Users").child(userid);
         refer.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if(userid.equals(uid))
                 {
-                    user1=dataSnapshot.child("username").getValue(String.class);
+                    user1=dataSnapshot.child("Full_Name").getValue(String.class);
                     num1=dataSnapshot.child("Allmsg").child(userinter).child("msgno").getValue(String.class);
-                    useremail=dataSnapshot.child("email").getValue(String.class);
+                    useremail=dataSnapshot.child("Email_ID").getValue(String.class);
                 }
 
                 else
                 {
-                    user2=dataSnapshot.child("username").getValue(String.class);
+                    user2=dataSnapshot.child("Full_Name").getValue(String.class);
                     num2=dataSnapshot.child("Allmsg").child(userinter).child("msgno").getValue(String.class);
 
                     if(num1==null)
@@ -1163,7 +1173,7 @@ public class MessageActivity extends AppCompatActivity implements messageadapter
     public void lastseen(){
 
         DatabaseReference refer;
-        refer=firebaseDatabase.getReference().child("users").child(uid).child("lastseen");
+        refer=firebaseDatabase.getReference().child("Users").child(uid).child("lastseen");
         refer.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override

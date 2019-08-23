@@ -47,7 +47,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
@@ -576,7 +576,7 @@ public class PhoneVerificationActivity extends AppCompatActivity implements Conn
                     userid=firebaseAuth.getCurrentUser().getUid();
                     DatabaseReference current_user;
 
-                    current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("verification");
+                    current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("verification");
                     current_user.setValue("1");
 
                     uploadImage(SelectCatagoryActivity.finalSelectedFilepath.get(0),0);
@@ -602,7 +602,7 @@ public class PhoneVerificationActivity extends AppCompatActivity implements Conn
                     userid=firebaseAuth.getCurrentUser().getUid();
                     DatabaseReference current_user;
 
-                    current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("verification");
+                    current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Verification");
                     current_user.setValue("1");
 
                     if(st==0)
@@ -784,7 +784,7 @@ public class PhoneVerificationActivity extends AppCompatActivity implements Conn
         if(userid==null)
             return;
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Posted Ad");
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Posted Ad");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -835,24 +835,23 @@ public class PhoneVerificationActivity extends AppCompatActivity implements Conn
         newAd.put("userid",userid);
         newAd.put("shownumber",Integer.toString(shownumber));
         newAd.put("condition",condition);
+        newAd.put("views","0");
+        newAd.put("likes","0");
 
         DatabaseReference current_user;
 
         current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(SavedAddressAdapter.adaddressmodel.getInstid()).child(Long.toString(totalAd_no));
         current_user.setValue(newAd);
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Posted Ad").child(Long.toString(userad_no));
+        current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Posted Ad").child(Long.toString(userad_no));
         String adid=SavedAddressAdapter.adaddressmodel.getInstid()+" "+Long.toString(totalAd_no);
         current_user.setValue(adid);
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("mobile");
-        current_user.setValue(phone);
-
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("username");
+        current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Full_Name");
         current_user.setValue(name);
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("verification");
-        current_user.setValue("1");
+        current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Mobile");
+        current_user.setValue(phone);
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         @SuppressLint("CommitPrefEdits") SharedPreferences.Editor searchhint = pref.edit();
@@ -869,11 +868,12 @@ public class PhoneVerificationActivity extends AppCompatActivity implements Conn
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(PhoneVerificationActivity.this, HomeActivity.class);
+                Intent intent = new Intent(PhoneVerificationActivity.this, AdConfirmationActivity.class);
+                intent.putExtra("ad_no", SavedAddressAdapter.adaddressmodel.getInstid()+" "+totalAd_no);
                 startActivity(intent);
                 finishAffinity();
             }
-        }, 1500);
+        }, 7500);
 
     }
 

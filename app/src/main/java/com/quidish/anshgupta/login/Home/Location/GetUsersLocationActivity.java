@@ -13,7 +13,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,15 +26,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,40 +48,42 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.quidish.anshgupta.login.Home.HomeActivity;
-import com.quidish.anshgupta.login.Home.Searching.SuggestionAdapter;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.R;
 import com.quidish.anshgupta.login.SavedLocationModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 
 public class GetUsersLocationActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    LinearLayout curloc,rest,recent,saved,add;
+    LinearLayout curloc, rest, recent, saved, add;
     LocationManager locationManager;
     private GoogleApiClient mGoogleApiClient;
     private Location mLocation;
-    List<Pair<String,String>> clg = new ArrayList<>();
-    ArrayList<Pair<String,String>> recsugglist = new ArrayList<>();
-    int REQUEST_CHECK_SETTINGS=1;
+    List<Pair<String, String>> clg = new ArrayList<>();
+    ArrayList<Pair<String, String>> recsugglist = new ArrayList<>();
+    int REQUEST_CHECK_SETTINGS = 1;
     EditText search;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     View recview;
     LocationAdapter suggestionAdapter;
-    RecyclerView suggestionrecycle,recentser,savedadd;
-    List<Pair<String,String>> sugglist=new ArrayList<>();
-    List<SavedLocationModel> savedAdd=new ArrayList<>();
+    RecyclerView suggestionrecycle, recentser, savedadd;
+    List<Pair<String, String>> sugglist = new ArrayList<>();
+    List<SavedLocationModel> savedAdd = new ArrayList<>();
     NestedScrollView scrollView;
-    static public int changelay=0;
+    static public int changelay = 0;
     RecentAddAdapter recentAdapter;
     SavedAddressAdapter savedAddressAdapter;
     ProgressBar searchprog;
     ImageView cancel;
     TextView noresult;
+    ProgressBar progbar;
+    ConstraintLayout proglayout;
+    LinearLayout back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,27 +92,36 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
 
         clgset();
 
-        search=findViewById(R.id.search);
-        scrollView=findViewById(R.id.scrollView2);
-        suggestionrecycle =findViewById(R.id.suggestion);
-        rest=findViewById(R.id.rest);
-        recview=findViewById(R.id.recview);
-        recent=findViewById(R.id.recent);
-        saved=findViewById(R.id.saved);
-        recentser=findViewById(R.id.recentser);
-        savedadd=findViewById(R.id.savedadd);
-        add=findViewById(R.id.add);
-        cancel=findViewById(R.id.cancel);
-        searchprog=findViewById(R.id.searchprog);
-        noresult=findViewById(R.id.noresult);
+        search = findViewById(R.id.search);
+        scrollView = findViewById(R.id.scrollView2);
+        suggestionrecycle = findViewById(R.id.suggestion);
+        rest = findViewById(R.id.rest);
+        recview = findViewById(R.id.recview);
+        recent = findViewById(R.id.recent);
+        saved = findViewById(R.id.saved);
+        recentser = findViewById(R.id.recentser);
+        savedadd = findViewById(R.id.savedadd);
+        add = findViewById(R.id.add);
+        cancel = findViewById(R.id.cancel);
+        searchprog = findViewById(R.id.searchprog);
+        noresult = findViewById(R.id.noresult);
+        proglayout=findViewById(R.id.proglayout);
+        progbar=findViewById(R.id.progbar);
+        back=findViewById(R.id.backbt);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
 
-            if (bundle.containsKey("change"))
-            {
+            if (bundle.containsKey("change")) {
                 rest.setVisibility(View.GONE);
-                changelay=1;
+                changelay = 1;
             }
 
         }
@@ -124,25 +134,25 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
             }
         });
 
-        suggestionAdapter = new LocationAdapter(sugglist,GetUsersLocationActivity.this);
-        RecyclerView.LayoutManager recyceSugg = new GridLayoutManager(GetUsersLocationActivity.this,1);
+        suggestionAdapter = new LocationAdapter(sugglist, GetUsersLocationActivity.this);
+        RecyclerView.LayoutManager recyceSugg = new GridLayoutManager(GetUsersLocationActivity.this, 1);
         suggestionrecycle.setLayoutManager(recyceSugg);
         recyceSugg.setAutoMeasureEnabled(false);
-        suggestionrecycle.setItemAnimator( new DefaultItemAnimator());
+        suggestionrecycle.setItemAnimator(new DefaultItemAnimator());
         suggestionrecycle.setAdapter(suggestionAdapter);
 
-        recentAdapter = new RecentAddAdapter(recsugglist,GetUsersLocationActivity.this);
-        RecyclerView.LayoutManager recyceSugg2 = new GridLayoutManager(GetUsersLocationActivity.this,1);
+        recentAdapter = new RecentAddAdapter(recsugglist, GetUsersLocationActivity.this);
+        RecyclerView.LayoutManager recyceSugg2 = new GridLayoutManager(GetUsersLocationActivity.this, 1);
         recentser.setLayoutManager(recyceSugg2);
         recyceSugg2.setAutoMeasureEnabled(false);
-        recentser.setItemAnimator( new DefaultItemAnimator());
+        recentser.setItemAnimator(new DefaultItemAnimator());
         recentser.setAdapter(recentAdapter);
 
-        savedAddressAdapter = new SavedAddressAdapter(savedAdd,GetUsersLocationActivity.this);
-        RecyclerView.LayoutManager recyceSugg3 = new GridLayoutManager(GetUsersLocationActivity.this,1);
+        savedAddressAdapter = new SavedAddressAdapter(savedAdd, GetUsersLocationActivity.this);
+        RecyclerView.LayoutManager recyceSugg3 = new GridLayoutManager(GetUsersLocationActivity.this, 1);
         savedadd.setLayoutManager(recyceSugg3);
         recyceSugg3.setAutoMeasureEnabled(false);
-        savedadd.setItemAnimator( new DefaultItemAnimator());
+        savedadd.setItemAnimator(new DefaultItemAnimator());
         savedadd.setAdapter(savedAddressAdapter);
 
         displayrecentsearch();
@@ -172,11 +182,11 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
 
                 String newText = st.toString();
 
-                if(newText.length()==0){
+                if (newText.length() == 0) {
                     suggestionrecycle.setVisibility(View.GONE);
                     recview.setVisibility(View.GONE);
 
-                    if(changelay==0)
+                    if (changelay == 0)
                         rest.setVisibility(View.VISIBLE);
 
                     sugglist.clear();
@@ -187,88 +197,84 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
                     noresult.setVisibility(View.GONE);
                 }
 
-                newText=newText.trim();
-                newText=newText.toLowerCase();
+                newText = newText.trim();
+                newText = newText.toLowerCase();
 
-                if(newText.length()==1){
+                if (newText.length() == 1) {
                     searchprog.setVisibility(View.GONE);
                     cancel.setVisibility(View.VISIBLE);
                     noresult.setVisibility(View.GONE);
 
-                    if(sugglist.size()==0)
+                    if (sugglist.size() == 0)
                         recview.setVisibility(View.GONE);
                 }
 
-                if(newText.length()>1) {
+                if (newText.length() > 1) {
 
                     searchprog.setVisibility(View.VISIBLE);
 
                     DatabaseReference ref;
-                    ref= FirebaseDatabase.getInstance().getReference().child("Institutes");
+                    ref = FirebaseDatabase.getInstance().getReference().child("Institutes");
 
                     final String finalNewText = newText;
                     ref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            int ct=0;
+                            int ct = 0;
 
-                            for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                                String actualinst=dataSnapshot1.child("name").getValue(String.class);
-                                String actualinstid=dataSnapshot1.child("id").getValue(String.class);
+                                String actualinst = dataSnapshot1.child("name").getValue(String.class);
+                                String actualinstid = dataSnapshot1.child("id").getValue(String.class);
 
-                                if(actualinst==null)
+                                if (actualinst == null)
                                     continue;
 
-                                String inst=actualinst.toLowerCase();
+                                String inst = actualinst.toLowerCase();
 
-                                if(inst.length()> finalNewText.length() && (inst.startsWith(finalNewText))){
+                                if (inst.length() > finalNewText.length() && (inst.startsWith(finalNewText))) {
 
-                                    if(ct==0){
-                                        ct=1;
+                                    if (ct == 0) {
+                                        ct = 1;
 
                                         sugglist.clear();
                                         suggestionrecycle.removeAllViewsInLayout();
                                         suggestionAdapter.notifyDataSetChanged();
                                     }
 
-                                    if(sugglist.size()==0)
-                                        sugglist.add(new Pair(actualinst,actualinstid));
+                                    if (sugglist.size() == 0)
+                                        sugglist.add(new Pair(actualinst, actualinstid));
 
                                     else
-                                        sugglist.add(new Pair(actualinst,actualinstid));
-                                }
+                                        sugglist.add(new Pair(actualinst, actualinstid));
+                                } else if (inst.length() > finalNewText.length() && (inst.contains(finalNewText))) {
 
-                                else if(inst.length()> finalNewText.length() && (inst.contains(finalNewText))){
-
-                                    if(ct==0){
-                                        ct=1;
+                                    if (ct == 0) {
+                                        ct = 1;
 
                                         sugglist.clear();
                                         suggestionrecycle.removeAllViewsInLayout();
                                         suggestionAdapter.notifyDataSetChanged();
                                     }
 
-                                    sugglist.add(new Pair(actualinst,actualinstid));
-                                }
-
-                                else {
+                                    sugglist.add(new Pair(actualinst, actualinstid));
+                                } else {
                                     String[] splited = finalNewText.split(" ");
 
                                     for (String aSplited : splited) {
 
-                                        if (inst.length() > aSplited.length() && inst.contains(aSplited)){
+                                        if (inst.length() > aSplited.length() && inst.contains(aSplited)) {
 
-                                            if(ct==0){
-                                                ct=1;
+                                            if (ct == 0) {
+                                                ct = 1;
 
                                                 sugglist.clear();
                                                 suggestionrecycle.removeAllViewsInLayout();
                                                 suggestionAdapter.notifyDataSetChanged();
                                             }
 
-                                            sugglist.add(new Pair(actualinst,actualinstid));
+                                            sugglist.add(new Pair(actualinst, actualinstid));
                                         }
                                     }
                                 }
@@ -280,18 +286,17 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
                             recview.setVisibility(View.VISIBLE);
                             rest.setVisibility(View.GONE);
 
-                            if(sugglist.size()==0){
+                            if (sugglist.size() == 0) {
                                 noresult.setVisibility(View.VISIBLE);
-                                noresult.setText("Sorry, we couldn't find result matching "+"\""+search.getText()+"\"");
+                                noresult.setText("Sorry, we couldn't find result matching " + "\"" + search.getText() + "\"");
                                 recview.setVisibility(View.GONE);
-                            }
-
-                            else {
+                            } else {
                                 noresult.setVisibility(View.GONE);
                                 recview.setVisibility(View.VISIBLE);
                             }
 
                         }
+
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                         }
@@ -307,41 +312,72 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
         });
 
 
-
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
 
-        curloc=findViewById(R.id.curloc);
+        curloc = findViewById(R.id.curloc);
 
         curloc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                enableMyLocationIfPermitted();
+
                 checkLocation();
 
-                if (ActivityCompat.checkSelfPermission(GetUsersLocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GetUsersLocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-
                 startLocationUpdates();
-
-                mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-                if(mLocation == null){
-                    startLocationUpdates();
-                }
-                if (mLocation != null) {
-
-                } else {
-                }
-
             }
         });
 
 
+    }
+
+
+    private void enableMyLocationIfPermitted() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startLocationUpdates();
+
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+                    if(mLocation == null){
+                        startLocationUpdates();
+                    }
+                    if (mLocation != null) {
+                        startLocationUpdates();
+                    } else {
+                        startLocationUpdates();
+
+                    }
+
+                } else {
+                    proglayout.setVisibility(View.GONE);
+
+                }
+                return;
+            }
+
+        }
     }
 
 
@@ -450,6 +486,8 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
     }
 
     protected void startLocationUpdates() {
+
+        proglayout.setVisibility(View.VISIBLE);
         // Create the location request
         long UPDATE_INTERVAL = 2 * 1000;
         long FASTEST_INTERVAL = 2000;
@@ -459,11 +497,12 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
                 .setFastestInterval(FASTEST_INTERVAL);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             return;
         }
+
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                 mLocationRequest, this);
+
     }
 
     @Override
@@ -492,15 +531,20 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
 
                         searchhint.apply();
 
-                        Intent intent = new Intent(GetUsersLocationActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(GetUsersLocationActivity.this, BottomNavigationDrawerActivity.class);
                         startActivity(intent);
                         finish();
                     }
                 }
 
+                onBackPressed();
+
+                Toast.makeText(getApplicationContext(),"Sorry, we couldn't find result matching to your current location",Toast.LENGTH_SHORT).show();
+
+
             }
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
 
     }
@@ -525,17 +569,20 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
+                        startLocationUpdates();
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
+                            proglayout.setVisibility(View.GONE);
                             status.startResolutionForResult(GetUsersLocationActivity.this, REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        proglayout.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -544,6 +591,7 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
 
     private boolean isLocationEnabled() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
@@ -580,6 +628,11 @@ public class GetUsersLocationActivity extends AppCompatActivity implements Googl
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

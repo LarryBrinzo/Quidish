@@ -72,6 +72,13 @@
     <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">24dp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#1A2835</item>
+    </style>
+
+    <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="MyActionMode" parent="@style/Widget.AppCompat.ActionMode">

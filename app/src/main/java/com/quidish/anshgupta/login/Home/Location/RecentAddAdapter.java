@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.R;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class RecentAddAdapter extends RecyclerView.Adapter<RecentAddAdapter.MyHo
 
                 searchhint.apply();
 
-                Intent intent=new Intent(context,HomeActivity.class);
+                Intent intent=new Intent(context, BottomNavigationDrawerActivity.class);
                 context.startActivity(intent);
                 ((Activity)context).finish();
             }

@@ -1,10 +1,8 @@
 package com.quidish.anshgupta.login.PostYourAd.PostAd;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,15 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.quidish.anshgupta.login.Home.HomeActivity;
 import com.quidish.anshgupta.login.R;
 import com.quidish.anshgupta.login.SavedLocationModel;
 
 import java.util.List;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapter.MyHoder>{
 

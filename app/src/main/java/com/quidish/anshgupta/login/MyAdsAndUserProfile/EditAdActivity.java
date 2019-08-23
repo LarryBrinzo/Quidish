@@ -1,7 +1,9 @@
 package com.quidish.anshgupta.login.MyAdsAndUserProfile;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,8 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
@@ -22,7 +27,6 @@ public class EditAdActivity extends AppCompatActivity implements ConnectivityRec
     ProgressDialog progressDialog;
     Button edit;
     LinearLayout back;
-    DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
     String ad_no;
 
@@ -48,17 +52,8 @@ public class EditAdActivity extends AppCompatActivity implements ConnectivityRec
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-
-            adtitle.setText(bundle.getString("adtitle"));
-            price.setText(bundle.getString("price"));
-            brand.setText(bundle.getString("brand"));
-            model.setText(bundle.getString("model"));
-            includes.setText(bundle.getString("includes"));
-            year.setText(bundle.getString("year"));
-            condition.setText(bundle.getString("condition"));
-            des_layout.setText(bundle.getString("addetails"));
-            ad_no=bundle.getString("ad_no");
-
+                ad_no=bundle.getString("ad_no");
+                addetailsset(ad_no);
         }
 
         back=findViewById(R.id.backbt);
@@ -78,6 +73,35 @@ public class EditAdActivity extends AppCompatActivity implements ConnectivityRec
         });
 
     }
+
+    public void addetailsset(String ad_no) {
+
+        DatabaseReference refer;
+        refer=firebaseDatabase.getReference().child("Ads").child(ad_no);
+        refer.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                adtitle.setText(dataSnapshot.child("ad_title").getValue(String.class));
+                price.setText("₹"+dataSnapshot.child("price").getValue(String.class));
+                brand.setText(dataSnapshot.child("brand").getValue(String.class));
+                model.setText(dataSnapshot.child("model").getValue(String.class));
+                includes.setText(dataSnapshot.child("includes").getValue(String.class));
+                year.setText(dataSnapshot.child("year").getValue(String.class));
+                condition.setText(dataSnapshot.child("condition").getValue(String.class));
+                des_layout.setText(dataSnapshot.child("ad_details").getValue(String.class));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                progressDialog.dismiss();
+            }
+        });
+
+    }
+
+
 
     public void editdata(){
         progressDialog.setMessage("Editing Ad...");

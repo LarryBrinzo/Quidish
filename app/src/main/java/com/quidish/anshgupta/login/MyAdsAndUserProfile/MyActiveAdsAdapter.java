@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.quidish.anshgupta.login.AdDiscriptionActivity;
 import com.quidish.anshgupta.login.AdModel;
 import com.quidish.anshgupta.login.R;
 
@@ -34,7 +35,7 @@ public class MyActiveAdsAdapter extends RecyclerView.Adapter<MyActiveAdsAdapter.
     FirebaseDatabase firebaseDatabase;
     FirebaseUser fuser;
 
-     MyActiveAdsAdapter(List<AdModel> list, Context context) {
+     public MyActiveAdsAdapter(List<AdModel> list, Context context) {
         this.list = list;
         this.context = context;
 
@@ -51,34 +52,45 @@ public class MyActiveAdsAdapter extends RecyclerView.Adapter<MyActiveAdsAdapter.
     @Override
     public MyHoder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.card2,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.active_ads_card,parent,false);
 
         return new MyHoder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MyHoder holder, @SuppressLint("RecyclerView") final int position) {
-        AdModel mylist = list.get(position);
+        final AdModel mylist = list.get(position);
         holder.price.setText(mylist.getPrice());
         holder.adtitle.setText(mylist.getTitle());
+        holder.brand.setText(mylist.getBrand());
+        holder.itmtagtext.setText(mylist.getCondition().toUpperCase());
 
-        holder.addetails_s=(mylist.getDetails());
-        holder.address=(mylist.getAddress());
-        holder.brand=(mylist.getBrand());
-        holder.email=(mylist.getEmail());
-        holder.adtitle_s=(mylist.getTitle());
-        holder.model=(mylist.getModel());
-        holder.includes=(mylist.getIncludes());
-        holder.year=(mylist.getYear());
-        holder.condition=(mylist.getCondition());
-        holder.name=(mylist.getName());
-        holder.mobile=(mylist.getMobile());
-        holder.price_s=(mylist.getPrice());
-        holder.pic1=(mylist.getUrl1());
-        holder.pic2=(mylist.getUrl2());
-        holder.pic3=(mylist.getUrl3());
-        holder.pic4=(mylist.getUrl4());
-        holder.ad_no=(mylist.getAdno());
+        if(list.get(position).getSold().equals("1"))
+        {
+            holder.comment.setText("Product Sold");
+        }
+
+        Glide.with(context).asBitmap().load(mylist.getUrl1()).into(holder.image1);
+
+        holder.card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(context, MyAdDiscriptionActivity.class);
+                intent.putExtra("ad_no", list.get(position).getAdno());
+                context.startActivity(intent);
+            }
+        });
+
+        holder.edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent=new Intent(context,EditAdActivity.class);
+                intent.putExtra("ad_no", list.get(position).getAdno());
+                context.startActivity(intent);
+            }
+        });
 
         holder.sold.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +105,8 @@ public class MyActiveAdsAdapter extends RecyclerView.Adapter<MyActiveAdsAdapter.
                                          //   progressDialog.setTitle("Loading...");
                                            // progressDialog.show();
 
-                                            DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(holder.ad_no).child("sold");
+                                            String[] splited2 = list.get(position).getAdno().split(" ");
+                                            DatabaseReference current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(splited2[0]).child(splited2[1]).child("sold");
                                             current_user.setValue("1");
 
                                             list.remove(position);
@@ -111,32 +124,6 @@ public class MyActiveAdsAdapter extends RecyclerView.Adapter<MyActiveAdsAdapter.
             }
         });
 
-        holder.card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(context,MyAdDiscriptionActivity.class);
-                intent.putExtra("addetails", holder.addetails_s);
-                intent.putExtra("address", holder.address);
-                intent.putExtra("brand", holder.brand);
-                intent.putExtra("email", holder.email);
-                intent.putExtra("name", holder.name);
-                intent.putExtra("mobile", holder.mobile);
-                intent.putExtra("price", holder.price_s);
-                intent.putExtra("adtitle", holder.adtitle_s);
-                intent.putExtra("model", holder.model);
-                intent.putExtra("includes", holder.includes);
-                intent.putExtra("year", holder.year);
-                intent.putExtra("condition", holder.condition);
-                intent.putExtra("pic1", holder.pic1);
-                intent.putExtra("pic2", holder.pic2);
-                intent.putExtra("pic3", holder.pic3);
-                intent.putExtra("pic4", holder.pic4);
-                intent.putExtra("ad_no", holder.ad_no);
-                context.startActivity(intent);
-            }
-        });
-
-        Glide.with(context).load(mylist.getUrl1()).into(holder.image1);
 
     }
 
@@ -169,20 +156,25 @@ public class MyActiveAdsAdapter extends RecyclerView.Adapter<MyActiveAdsAdapter.
     }
 
     class MyHoder extends RecyclerView.ViewHolder{
-        TextView price,adtitle;
+        TextView price,adtitle,brand,itmtagtext,comment,likes,views;//,sold;
         ImageView image1;
-        String addetails_s,address,brand,email,name,mobile,price_s,pic1,pic2,pic3,pic4,adtitle_s,model,includes,year,condition,ad_no;
-        LinearLayout card;
-        Button sold;
+        LinearLayout card,sold,delete,edit;
 
 
          MyHoder(View itemView) {
             super(itemView);
-            price = itemView.findViewById(R.id.price);
-            adtitle= itemView.findViewById(R.id.addetails);
-            image1 =itemView.findViewById(R.id.image);
-            card=itemView.findViewById(R.id.card_view);
-            sold=itemView.findViewById(R.id.sub);
+             price = itemView.findViewById(R.id.price);
+             adtitle= itemView.findViewById(R.id.title);
+             brand=itemView.findViewById(R.id.brand);
+             image1 =itemView.findViewById(R.id.image);
+             card=itemView.findViewById(R.id.card_view);
+             itmtagtext=itemView.findViewById(R.id.itmtagtext);
+             sold=itemView.findViewById(R.id.sold);
+             comment=itemView.findViewById(R.id.comment);
+             likes=itemView.findViewById(R.id.likes);
+             views=itemView.findViewById(R.id.views);
+             delete=itemView.findViewById(R.id.del);
+             edit=itemView.findViewById(R.id.edit);
         }
     }
 

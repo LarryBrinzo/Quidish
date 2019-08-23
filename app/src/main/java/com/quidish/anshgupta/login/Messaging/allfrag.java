@@ -118,7 +118,6 @@ public class allfrag extends Fragment {
         userid= Objects.requireNonNull(myfba.getCurrentUser()).getUid();
         mstoragrref= FirebaseStorage.getInstance().getReference();
 
-        //progressDialog =new ProgressDialog(getContext(),R.style.AppCompatAlertDialogStyle);
 
         addall();
 
@@ -130,7 +129,7 @@ public class allfrag extends Fragment {
 //        progressDialog.setTitle("Loading...");
 //        progressDialog.show();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Allmsg");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Allmsg");
 
         Query query = databaseReference.orderByChild("chtime");
         query.addValueEventListener(new ValueEventListener() {
@@ -174,11 +173,11 @@ public class allfrag extends Fragment {
                     fire.setName(dataSnapshot1.child("name").getValue(String.class));
 
                     if(type!=null && type.equals("seller"))
-                        fire.setUserid(splited[1]);
+                        fire.setUserid(splited[2]);
                     else
                         fire.setUserid(dataSnapshot1.child("selleruid").getValue(String.class));
 
-                    fire.setAd_no(splited[0]);
+                    fire.setAdno(splited[0]+" "+splited[1]);
 
                     alllist.add(fire);
 

@@ -144,6 +144,6 @@
         android:layout_height="1dp"
         android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        android:background="#D3D3D3" />
+        android:background="#F1F1F3" />
 
 </LinearLayout>

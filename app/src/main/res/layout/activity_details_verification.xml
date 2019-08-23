@@ -19,78 +19,7 @@
         app:layout_constraintVertical_bias="0.0">
 
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/layoutsec"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#fff"
-            android:visibility="gone">
-
-            <android.support.percent.PercentRelativeLayout
-                android:id="@+id/percentRelativeLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ProgressBar
-                    android:id="@+id/prog"
-                    android:indeterminateDrawable="@drawable/progressbar_intermediate"
-                    app:layout_aspectRatio="100%"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_widthPercent="100%" />
-
-            </android.support.percent.PercentRelativeLayout>
-
-
-            <android.support.percent.PercentRelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/circle"
-                    android:src="@drawable/circlr2"
-                    android:visibility="gone"
-                    app:layout_aspectRatio="100%"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_widthPercent="100%" />
-
-            </android.support.percent.PercentRelativeLayout>
-
-
-            <ImageView
-                android:id="@+id/tick"
-                android:layout_width="150dp"
-                android:layout_height="130dp"
-                android:src="@drawable/tickf"
-                android:tint="@color/greenAccent"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-        </android.support.constraint.ConstraintLayout>
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/layoutorg"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
@@ -332,30 +261,107 @@
                             android:layout_marginTop="70dp"
                             android:layout_weight="1">
 
-                            <Button
-                                android:id="@+id/next"
+                            <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="50dp"
+                                android:layout_height="0dp"
                                 android:layout_alignParentBottom="true"
-                                android:layout_centerHorizontal="true"
-                                android:layout_gravity="bottom|end"
-                                android:layout_marginBottom="15dp"
-                                android:layout_marginEnd="15dp"
-                                android:layout_marginLeft="15dp"
-                                android:layout_marginRight="15dp"
-                                android:layout_marginStart="15dp"
-                                android:background="@drawable/border8"
-                                android:text="VERIFY ACCOUNT"
-                                android:textAllCaps="false"
-                                android:textColor="#aeaeae"
-                                android:textColorLink="#FFFFFF"
-                                android:textSize="18dp"
-                                android:textStyle="bold"
+                                android:layout_weight="1"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="1.0" />
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <LinearLayout
+                                    android:id="@+id/my_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:background="#fff"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="15dp"
+                                        android:layout_marginTop="15dp"
+                                        android:fontFamily="sans-serif"
+                                        android:text="Listing product"
+                                        android:textColor="#000"
+                                        android:textSize="20dp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="15dp"
+                                        android:layout_marginTop="15dp"
+                                        android:fontFamily="sans-serif"
+                                        android:text="Posting your ad"
+                                        android:textColor="#3c3d4b"
+                                        android:textSize="14dp"
+                                        android:textStyle="bold" />
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_marginBottom="25dp"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <ProgressBar
+                                            android:id="@+id/progressBar"
+                                            style="?android:attr/progressBarStyleHorizontal"
+                                            android:layout_width="0dp"
+                                            android:layout_height="20dp"
+                                            android:layout_marginLeft="12dp"
+                                            android:layout_marginRight="7dp"
+                                            android:layout_weight="1"
+                                            android:max="100"
+                                            android:progressDrawable="@drawable/circular_prog_bar"
+                                            android:secondaryProgress="0" />
+
+                                        <TextView
+                                            android:id="@+id/cancel"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginRight="15dp"
+                                            android:fontFamily="sans-serif"
+                                            android:text="CANCEL"
+                                            android:textColor="#FF5033"
+                                            android:textSize="12dp"
+                                            android:textStyle="bold" />
+
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                                <Button
+                                    android:id="@+id/next"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="50dp"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_gravity="bottom|end"
+                                    android:layout_marginStart="15dp"
+                                    android:layout_marginLeft="15dp"
+                                    android:layout_marginEnd="15dp"
+                                    android:layout_marginRight="15dp"
+                                    android:layout_marginBottom="15dp"
+                                    android:background="@drawable/border8"
+                                    android:text="VERIFY ACCOUNT"
+                                    android:textAllCaps="false"
+                                    android:textColor="#aeaeae"
+                                    android:textColorLink="#FFFFFF"
+                                    android:textSize="18dp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintVertical_bias="1.0" />
+
+                            </RelativeLayout>
 
                         </android.support.constraint.ConstraintLayout>
                     </LinearLayout>
@@ -364,7 +370,23 @@
 
             </LinearLayout>
 
-
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutorg"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="125dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

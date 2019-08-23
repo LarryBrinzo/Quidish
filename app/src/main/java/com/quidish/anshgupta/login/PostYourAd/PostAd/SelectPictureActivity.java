@@ -1,10 +1,7 @@
 package com.quidish.anshgupta.login.PostYourAd.PostAd;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -17,17 +14,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.percent.PercentRelativeLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,31 +34,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.quidish.anshgupta.login.PostYourAd.AdpostActivity;
 import com.quidish.anshgupta.login.PostYourAd.CameraUtils;
-import com.quidish.anshgupta.login.PostYourAd.ImagePicker;
 import com.quidish.anshgupta.login.R;
 
 public class SelectPictureActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
@@ -75,6 +60,7 @@ public class SelectPictureActivity extends AppCompatActivity implements AdapterV
     ImageAdapter imageAdapter;
     int myColumnWidth;
     public static final int MEDIA_TYPE_IMAGE = 1;
+    private static final int PICK_FROM_GALLERY = 1;
     String imageurl;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     private static String imageStoragePath="0";
@@ -116,9 +102,25 @@ public class SelectPictureActivity extends AppCompatActivity implements AdapterV
 
         Ad_category=null;
 
-        Allimages = getAllShownImagesPath(this,"All Photos");
-        imageurl=getURLForResource(R.drawable.drawerback);
-        Allimages.add(0,new Pair(getURLForResource(R.drawable.drawerback),0));
+
+        try {
+            if (ActivityCompat.checkSelfPermission(SelectPictureActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(SelectPictureActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_FROM_GALLERY);
+            } else {
+                galleryImageSetup();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void galleryImageSetup(){
+
+        Allimages = getAllShownImagesPath(SelectPictureActivity.this,"All Photos");
+        imageurl=getURLForResource(R.drawable.add_pic2);
+        Allimages.add(0,new Pair(getURLForResource(R.drawable.add_pic2),0));
 
         imageAdapter = new ImageAdapter(Allimages,SelectPictureActivity.this);
         RecyclerView.LayoutManager recyceSugg2 = new GridLayoutManager(SelectPictureActivity.this,3);
@@ -152,6 +154,21 @@ public class SelectPictureActivity extends AppCompatActivity implements AdapterV
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
+    {
+        switch (requestCode) {
+            case PICK_FROM_GALLERY:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                   galleryImageSetup();
+                } else {
+                    onBackPressed();
+                }
+                break;
+        }
+    }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -162,7 +179,7 @@ public class SelectPictureActivity extends AppCompatActivity implements AdapterV
         gallery.removeAllViewsInLayout();
 
         Allimages = getAllShownImagesPath(this,foldername);
-        Allimages.add(0,new Pair(getURLForResource(R.drawable.drawerback),0));
+        Allimages.add(0,new Pair(getURLForResource(R.drawable.add_pic2),0));
 
         imageAdapter = new ImageAdapter(Allimages,SelectPictureActivity.this);
         RecyclerView.LayoutManager recyceSugg2 = new GridLayoutManager(SelectPictureActivity.this,3);
@@ -512,6 +529,7 @@ public class SelectPictureActivity extends AppCompatActivity implements AdapterV
         gallery.setItemAnimator( new DefaultItemAnimator());
         gallery.setAdapter(imageAdapter);
     }
+
 
     @Override
     public void onBackPressed() {

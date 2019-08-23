@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.quidish.anshgupta.login.AdDiscriptionActivity;
 import com.quidish.anshgupta.login.AdModel;
+import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.R;
 
@@ -67,7 +68,7 @@ public class UserAdsAdapter extends RecyclerView.Adapter<UserAdsAdapter.MyHoder>
 
 //        soldno=mylist.getSold();
 
-        if(list.get(position).getWish().equals("1"))
+        if(list.get(position).getWish()!=null && list.get(position).getWish().equals("1"))
         {
             holder.wishr.setVisibility(View.VISIBLE);
             holder.wish.setVisibility(View.GONE);
@@ -116,7 +117,7 @@ public class UserAdsAdapter extends RecyclerView.Adapter<UserAdsAdapter.MyHoder>
 
                 else
                 {
-                    ref=FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("wish").child(list.get(position).getAdno());
+                    ref=FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("wish").child(list.get(position).getAdno());
 
                     holder.wishr.setVisibility(View.VISIBLE);
                     holder.wish.setVisibility(View.GONE);
@@ -125,7 +126,7 @@ public class UserAdsAdapter extends RecyclerView.Adapter<UserAdsAdapter.MyHoder>
 //                    assert v != null;
 //                    v.vibrate(400);
                     ref.setValue(list.get(position).getAdno());
-                    HomeActivity.listwish.add(list.get(position).getAdno());
+                    HomeFragment.listwish.add(list.get(position).getAdno());
                     list.get(position).setWish("1");
                 }
 
@@ -145,12 +146,12 @@ public class UserAdsAdapter extends RecyclerView.Adapter<UserAdsAdapter.MyHoder>
 
                 else
                 {
-                    ref=FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("wish").child(list.get(position).getAdno());
+                    ref=FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("wish").child(list.get(position).getAdno());
 
                     ref.setValue(null);
                     holder.wish.setVisibility(View.VISIBLE);
                     holder.wishr.setVisibility(View.GONE);
-                    HomeActivity.listwish.remove(list.get(position).getAdno());
+                    HomeFragment.listwish.remove(list.get(position).getAdno());
                     list.get(position).setWish("0");
 
                     if(list.get(position).getActivity().equals("1"))

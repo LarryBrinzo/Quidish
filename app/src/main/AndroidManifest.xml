@@ -29,6 +29,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateHidden|adjustResize">
+        <activity android:name=".PostYourAd.PostAd.AdConfirmationActivity"></activity>
+        <activity android:name=".Home.BottomNavifation.BottomNavigationDrawerActivity" />
         <activity
             android:name=".IntroScreen.WelcomeActivity"
             android:configChanges="orientation"
@@ -68,27 +70,6 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".PostYourAd.SubCategoryActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".PostYourAd.AdpostActivity"
-            android:configChanges="orientation"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".PostYourAd.CategoryActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MyAccount.MyaccountActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MyAccount.ProfileDetailsActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".LoginRegister.LoginSignupactivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
@@ -122,11 +103,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".ZoomActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Home.HomeActivity"
+            android:wname=".ZoomActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
@@ -245,7 +222,6 @@
         <activity android:name=".PostYourAd.PostAd.LocationSetActivity" />
         <activity android:name=".PostYourAd.PostAd.DetailsVerificationActivity" />
         <activity android:name=".PostYourAd.PostAd.PhoneVerificationActivity" />
-        <activity android:name=".PostYourAd.PostAd.ProgressBarActivity"></activity>
     </application>
 
 </manifest>

@@ -10,19 +10,18 @@
 
     <LinearLayout
         android:id="@+id/backbt"
-        android:clickable="true"
-        android:layout_width="60dp"
-        android:background="?attr/selectableItemBackground"
+        android:layout_width="56dp"
         android:layout_height="56dp"
-        android:gravity="center_vertical"
-        android:focusable="true">
+        android:background="#fff"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
 
         <ImageView
             android:layout_width="27dp"
             android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:scaleType="centerInside"
             android:background="@null"
+            android:scaleType="centerInside"
             app:srcCompat="@drawable/backb" />
 
     </LinearLayout>

@@ -25,8 +25,8 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
-import com.quidish.anshgupta.login.Home.HomeActivity;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
 import com.quidish.anshgupta.login.R;
@@ -243,7 +243,7 @@ public class RegisterActivity extends AppCompatActivity implements ConnectivityR
 
                     //progressBar.setVisibility(View.GONE);
 
-                    Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, BottomNavigationDrawerActivity.class);
                     startActivity(intent);
                     finish();
 

@@ -4,8 +4,10 @@
     android:insetLeft="-2dp">
 
     <shape android:shape="rectangle">
-        <stroke android:width="0.5dp" android:color="#CCCCCC" />
+        <stroke android:width="0.5dp" android:color="#F1F1F3" />
         <solid android:color="@null" />
     </shape>
+
+
 
 </inset>

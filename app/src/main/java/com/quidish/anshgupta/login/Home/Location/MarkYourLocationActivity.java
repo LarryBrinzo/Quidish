@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -18,9 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,15 +35,11 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.PostYourAd.PostAd.LocationSetActivity;
 import com.quidish.anshgupta.login.R;
 
@@ -53,7 +48,6 @@ public class MarkYourLocationActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     LocationManager locationManager;
@@ -65,6 +59,7 @@ public class MarkYourLocationActivity extends AppCompatActivity implements
     TextView address,nick;
     String landmark=null,comp_address,nicname,lat,lng,inst_name,instid;
     int post=0;
+    LinearLayout back;
 
 
     @SuppressLint("SetTextI18n")
@@ -77,6 +72,14 @@ public class MarkYourLocationActivity extends AppCompatActivity implements
         save=findViewById(R.id.save);
         nick=findViewById(R.id.nick);
         address=findViewById(R.id.address);
+        back=findViewById(R.id.backbt);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -167,7 +170,7 @@ public class MarkYourLocationActivity extends AppCompatActivity implements
                 searchhint.putString(srchimg,inst_name);
 
                 if(post==0){
-                Intent intent = new Intent(MarkYourLocationActivity.this, HomeActivity.class);
+                Intent intent = new Intent(MarkYourLocationActivity.this, BottomNavigationDrawerActivity.class);
                 startActivity(intent);
                 finishAffinity();}
 
@@ -460,6 +463,11 @@ public class MarkYourLocationActivity extends AppCompatActivity implements
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

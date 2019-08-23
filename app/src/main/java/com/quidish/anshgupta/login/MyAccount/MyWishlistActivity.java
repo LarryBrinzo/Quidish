@@ -1,6 +1,5 @@
 package com.quidish.anshgupta.login.MyAccount;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,10 +35,9 @@ public class MyWishlistActivity extends AppCompatActivity implements Connectivit
     FirebaseUser fuser;
     FirebaseAuth myfba;
     ProgressBar progressBar;
-    ProgressDialog progressDialog;
-    DatabaseReference databaseReference,reference;
-    List<AdModel> listhome=new ArrayList<>();
-    List<AdModel> listwish=new ArrayList<>();
+    WishlistAdapter wishlistAdapter;
+    List<AdModel> wishlist=new ArrayList<>();
+    List<String> listwish=new ArrayList<>();
     RecyclerView recycle;
     LinearLayout empty;
     LinearLayout back;
@@ -60,10 +60,12 @@ public class MyWishlistActivity extends AppCompatActivity implements Connectivit
 
         recycle.setNestedScrollingEnabled(false);
 
-        if(listwish.size()==0)
-            empty.setVisibility(View.VISIBLE);
-        else
-            empty.setVisibility(View.GONE);
+        wishlistAdapter = new WishlistAdapter(wishlist,MyWishlistActivity.this);
+        RecyclerView.LayoutManager recyceAll = new GridLayoutManager(MyWishlistActivity.this,2);
+        recycle.setLayoutManager(recyceAll);
+        recyceAll.setAutoMeasureEnabled(false);
+        recycle.setItemAnimator( new DefaultItemAnimator());
+        recycle.setAdapter(wishlistAdapter);
 
         recycle.removeAllViewsInLayout();
         empty.setVisibility(View.GONE);
@@ -77,93 +79,65 @@ public class MyWishlistActivity extends AppCompatActivity implements Connectivit
             }
         });
 
-        addproductad();
+        userwish();
     }
 
     public void addproductad(){
 
-        progressBar.setVisibility(View.VISIBLE);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Ads");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String ad_no = dataSnapshot.child("tad_no").getValue(String.class);
-                int x = Integer.parseInt(ad_no);
-                x--;
+                wishlist.clear();
 
-                listhome.clear();
-                for(int i=1;i<=x;i++) {
+                for(int i=listwish.size()-1;i>=0;i--) {
 
-                    ad_no = Integer.toString(i);
+                    String[] splited = listwish.get(i).split(" ");
 
-                    String adsold = dataSnapshot.child(ad_no).child("sold").getValue(String.class);
-                    String usid = dataSnapshot.child(ad_no).child("userid").getValue(String.class);
-                  //  String posted = dataSnapshot.child(ad_no).child("posted").getValue(String.class);
+                    String ad_no=splited[1];
+                    String clgid=splited[0];
 
-                    String adtitle = dataSnapshot.child(ad_no).child("ad_title").getValue(String.class);
-                    String model = dataSnapshot.child(ad_no).child("model").getValue(String.class);
-                    String include = dataSnapshot.child(ad_no).child("includes").getValue(String.class);
-                    String year = dataSnapshot.child(ad_no).child("year").getValue(String.class);
-                    String condition = dataSnapshot.child(ad_no).child("condition").getValue(String.class);
-                    String addetails = dataSnapshot.child(ad_no).child("ad_details").getValue(String.class);
-                    String price = dataSnapshot.child(ad_no).child("price").getValue(String.class);
-                    String address = dataSnapshot.child(ad_no).child("address").getValue(String.class);
-                    String brand = dataSnapshot.child(ad_no).child("brand").getValue(String.class);
-                    String email = dataSnapshot.child(ad_no).child("email_id").getValue(String.class);
-                    String mobile = dataSnapshot.child(ad_no).child("mobile").getValue(String.class);
-                    String name = dataSnapshot.child(ad_no).child("name").getValue(String.class);
-                    String image1 = dataSnapshot.child(ad_no).child("image1").getValue(String.class);
-                    String image2 = dataSnapshot.child(ad_no).child("image2").getValue(String.class);
-                    String image3 = dataSnapshot.child(ad_no).child("image3").getValue(String.class);
-                    String image4 = dataSnapshot.child(ad_no).child("image4").getValue(String.class);
+                    String adtitle = dataSnapshot.child(clgid).child(ad_no).child("ad_title").getValue(String.class);
+                    String price = dataSnapshot.child(clgid).child(ad_no).child("price").getValue(String.class);
+                    String brand = dataSnapshot.child(clgid).child(ad_no).child("brand").getValue(String.class);
+                    String image1 = dataSnapshot.child(clgid).child(ad_no).child("image").getValue(String.class);
+                    String name = dataSnapshot.child(clgid).child(ad_no).child("name").getValue(String.class);
 
-                    price = "₹ " + price;
+                    String[] splited2 = image1.split(" ");
 
                     AdModel fire = new AdModel();
 
                     fire.setPrice(price);
                     fire.setTitle(adtitle);
-                    fire.setModel(model);
-                    fire.setIncludes(include);
-                    fire.setYear(year);
-                    fire.setCondition(condition);
-                    fire.setDetails(addetails);
-                    fire.setAddress(address);
                     fire.setBrand(brand);
-                    fire.setEmail(email);
-                    fire.setMobile(mobile);
+                    fire.setAdno(listwish.get(i));
+                    fire.setUrl1(splited2[0]);
                     fire.setName(name);
-                    fire.setUrl1(image1);
-                    fire.setUrl2(image2);
-                    fire.setUrl3(image3);
-                    fire.setUrl4(image4);
-                    fire.setAdno(ad_no);
-                    fire.setActivity("1");
-                    fire.setSold(adsold);
-                    fire.setUser(usid);
 
-                    listhome.add(fire);
+                    wishlist.add(fire);
+
+                    wishlistAdapter.notifyItemInserted(wishlist.size() - 1);
 
                 }
 
-                userwish();
-                progressBar.setVisibility(View.GONE);
+                wishlistAdapter.notifyDataSetChanged();
+
+                if(listwish.isEmpty())
+                    empty.setVisibility(View.VISIBLE);
+                else
+                    empty.setVisibility(View.GONE);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                progressBar.setVisibility(View.GONE);
             }
         });
 
     }
-
     public void userwish(){
 
-        progressBar.setVisibility(View.VISIBLE);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("wish");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("wish");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,47 +147,20 @@ public class MyWishlistActivity extends AppCompatActivity implements Connectivit
 
                 for(DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
 
-                    String advalue=dataSnapshot1.getValue(String.class);
-                    int x = Integer.parseInt(advalue);
-                    x--;
-
-                    AdModel ff=listhome.get(x);
-
-                        ff.setWish("1");
-                        listwish.add(ff);
+                    String product_no=dataSnapshot1.getValue(String.class);
+                    listwish.add(product_no);
                 }
 
+                addproductad();
 
-
-                progressBar.setVisibility(View.GONE);
-                 AdshowWish();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                progressBar.setVisibility(View.GONE);
             }
         });
 
     }
 
-    public void AdshowWish(){
-
-        recycle.removeAllViewsInLayout();
-
-        if(listwish.size()==0)
-            empty.setVisibility(View.VISIBLE);
-
-        else {
-            empty.setVisibility(View.GONE);
-        UserAdsAdapter recyclerAdapter = new UserAdsAdapter(listwish,MyWishlistActivity.this);
-        RecyclerView.LayoutManager recyce = new GridLayoutManager(MyWishlistActivity.this,1);
-        recycle.setLayoutManager(recyce);
-        recycle.setItemAnimator( new DefaultItemAnimator());
-        recycle.setAdapter(recyclerAdapter);
-
-        progressBar.setVisibility(View.GONE);}
-    }
 
     @Override
     public void onBackPressed() {

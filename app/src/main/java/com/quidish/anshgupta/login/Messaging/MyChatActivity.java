@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
@@ -18,6 +20,8 @@ import com.quidish.anshgupta.login.R;
 public class MyChatActivity extends AppCompatActivity implements sellingfrag.OnFragmentInteractionListener,buyfrag.OnFragmentInteractionListener,allfrag.OnFragmentInteractionListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
     LinearLayout back;
+    FirebaseUser fuser;
+    FirebaseAuth myfba;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,10 @@ public class MyChatActivity extends AppCompatActivity implements sellingfrag.OnF
         setContentView(R.layout.activity_my_chat);
 
         checkConnection();
+
+        myfba= FirebaseAuth.getInstance();
+        fuser = myfba.getCurrentUser();
+
 
         ViewPager viewPager = findViewById(R.id.pager);
         MyPagerAdapter myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
@@ -34,7 +42,7 @@ public class MyChatActivity extends AppCompatActivity implements sellingfrag.OnF
 
         back=findViewById(R.id.backbt);
 
-          back.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
@@ -42,6 +50,8 @@ public class MyChatActivity extends AppCompatActivity implements sellingfrag.OnF
         });
 
     }
+
+
 
     @Override
     public void onBackPressed() {

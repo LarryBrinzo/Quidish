@@ -107,7 +107,7 @@ public class sellingfrag extends Fragment {
 
 //        progressDialog.setTitle("Loading...");
 //        progressDialog.show();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Allmsg");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Allmsg");
 
         Query query = databaseReference.orderByChild("chtime");
         query.addValueEventListener(new ValueEventListener() {
@@ -152,8 +152,8 @@ public class sellingfrag extends Fragment {
                     fire.setTime(timest);
                     fire.setImg(dataSnapshot1.child("img").getValue(String.class));
                     fire.setName(dataSnapshot1.child("name").getValue(String.class));
-                    fire.setAd_no(splited[0]);
-                    fire.setUserid(splited[1]);
+                    fire.setAdno(splited[0]+" "+splited[1]);
+                    fire.setUserid(splited[2]);
 
                     selllist.add(fire);
 

@@ -15,7 +15,6 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.quidish.anshgupta.login.BuildConfig;
-import com.quidish.anshgupta.login.PostYourAd.AdpostActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,12 @@ import java.util.Date;
 import java.util.Locale;
 
 public class CameraUtils {
+
+    public static final String GALLERY_DIRECTORY_NAME = "Quidish";
+    public static final String IMAGE_EXTENSION = "jpg";
+    public static final String VIDEO_EXTENSION = "mp4";
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    public static final int MEDIA_TYPE_VIDEO = 2;
 
     /**
      * Refreshes gallery on adding new image/video. Gallery won't be refreshed
@@ -99,13 +104,13 @@ public class CameraUtils {
         File mediaStorageDir = new File(
                 Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                AdpostActivity.GALLERY_DIRECTORY_NAME);
+                GALLERY_DIRECTORY_NAME);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.e(AdpostActivity.GALLERY_DIRECTORY_NAME, "Oops! Failed create "
-                        + AdpostActivity.GALLERY_DIRECTORY_NAME + " directory");
+                Log.e(GALLERY_DIRECTORY_NAME, "Oops! Failed create "
+                        + GALLERY_DIRECTORY_NAME + " directory");
                 return null;
             }
         }
@@ -115,12 +120,12 @@ public class CameraUtils {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         File mediaFile;
-        if (type == AdpostActivity.MEDIA_TYPE_IMAGE) {
+        if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "IMG_" + timeStamp + "." + AdpostActivity.IMAGE_EXTENSION);
-        } else if (type == AdpostActivity.MEDIA_TYPE_VIDEO) {
+                    + "IMG_" + timeStamp + "." + IMAGE_EXTENSION);
+        } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "VID_" + timeStamp + "." + AdpostActivity.VIDEO_EXTENSION);
+                    + "VID_" + timeStamp + "." + VIDEO_EXTENSION);
         } else {
             return null;
         }

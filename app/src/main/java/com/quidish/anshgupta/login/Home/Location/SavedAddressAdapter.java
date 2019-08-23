@@ -12,9 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.R;
 import com.quidish.anshgupta.login.SavedLocationModel;
 
@@ -59,7 +58,7 @@ public class SavedAddressAdapter extends RecyclerView.Adapter<SavedAddressAdapte
 
                 searchhint.apply();
 
-                Intent intent=new Intent(context,HomeActivity.class);
+                Intent intent=new Intent(context, BottomNavigationDrawerActivity.class);
                 context.startActivity(intent);
                 ((Activity)context).finish();
             }

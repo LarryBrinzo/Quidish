@@ -37,7 +37,7 @@ public class SuggestionAdapter extends RecyclerView.Adapter<SuggestionAdapter.My
     @Override
     public MyHoder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.suggestionlayout,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.location_suggestion_layout,parent,false);
         return new MyHoder(view);
     }
 

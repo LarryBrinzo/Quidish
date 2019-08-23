@@ -120,11 +120,11 @@
                 android:layout_marginTop="15dp">
 
                 <EditText
-                    android:id="@+id/mobile"
+                    android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="#ececf4"
-                    android:hint="Mobile No."
+                    android:hint="Email ID"
                     android:text=""
                     android:inputType="number"
                     android:textColor="#000000"
@@ -221,7 +221,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="Don't have an account?"
+                    android:text="Already have an account?"
                     android:textColor="#696969" />
 
                 <TextView
@@ -232,7 +232,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:clickable="true"
-                    android:text=" Sign up "
+                    android:text=" Login "
                     android:textColor="#596BB7"
                     android:textSize="14dp"
                     android:textStyle="bold" />

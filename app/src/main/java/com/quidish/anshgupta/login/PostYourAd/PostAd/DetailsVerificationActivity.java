@@ -1,5 +1,6 @@
 package com.quidish.anshgupta.login.PostYourAd.PostAd;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -22,6 +24,8 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -52,7 +56,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.quidish.anshgupta.login.Home.HomeActivity;
+import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
@@ -80,10 +84,10 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
     Switch switch1;
     String brand,condition,description,price,adtitle,imagesUri=null;
     Button next;
+    View layoutsec;
     int shownumber=0,phtext=0,nametext=0,verify=0;
     long totalAd_no=1,userad_no=1;
-    ImageView circle,tick;
-    ConstraintLayout layoutsec;
+    ImageView circle;
     ProgressBar progressBar;
     CoordinatorLayout coordinatorLayout;
 
@@ -104,11 +108,12 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
         switch1=findViewById(R.id.switch1);
         next=findViewById(R.id.next);
         circle=findViewById(R.id.circle);
-        tick=findViewById(R.id.tick);
-        progressBar=findViewById(R.id.prog);
+        progressBar=findViewById(R.id.progressBar);
         layoutfir=findViewById(R.id.layoutorg);
-        layoutsec=findViewById(R.id.layoutsec);
         coordinatorLayout=findViewById(R.id.coordinator);
+        layoutsec = findViewById(R.id.my_view);
+
+        layoutsec.setVisibility(View.INVISIBLE);
 
         back=findViewById(R.id.backbt);
 
@@ -149,9 +154,15 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
 
                 else {
 
-                    layoutfir.setVisibility(View.GONE);
-                    layoutsec.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
+                    next.setVisibility(View.GONE);
+
+                    layoutfir.setVisibility(View.VISIBLE);
+                    slideUp(layoutsec);
+
+                    ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", 0,20);
+                    progressAnimator.setDuration(1000);
+                    progressAnimator.setInterpolator(new LinearInterpolator());
+                    progressAnimator.start();
 
                     uploadImage(SelectCatagoryActivity.finalSelectedFilepath.get(0),0);
                 }
@@ -249,7 +260,7 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
 
     public void checknumberpresent(){
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("verification");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Verification");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -288,8 +299,6 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 progressBar.setVisibility(View.GONE);
-                layoutsec.setVisibility(View.GONE);
-                layoutfir.setVisibility(View.VISIBLE);
 
                 Snackbar snackbar=Snackbar.make(coordinatorLayout,"Error...",Snackbar.LENGTH_LONG);
 
@@ -307,14 +316,14 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
 
     public void linkaccount() {
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users").child(userid);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                useremail = dataSnapshot.child("email").getValue(String.class);
-                String usermobile = dataSnapshot.child("mobile").getValue(String.class);
-                String username = dataSnapshot.child("username").getValue(String.class);
+                useremail = dataSnapshot.child("Email_ID").getValue(String.class);
+                String usermobile = dataSnapshot.child("Mobile").getValue(String.class);
+                String username = dataSnapshot.child("Full_Name").getValue(String.class);
 
                 if(username != null && !username.isEmpty())
                     name.setText(username);
@@ -346,8 +355,6 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 progressBar.setVisibility(View.GONE);
-                layoutsec.setVisibility(View.GONE);
-                layoutfir.setVisibility(View.VISIBLE);
 
                 Snackbar snackbar=Snackbar.make(coordinatorLayout,"Error...",Snackbar.LENGTH_LONG);
 
@@ -402,17 +409,22 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
 
                                     getContentResolver().delete(filepath1, null, null);
 
+                                    ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), progressBar.getProgress()+5);
+                                    progressAnimator.setDuration(1000);
+                                    progressAnimator.setInterpolator(new LinearInterpolator());
+                                    progressAnimator.start();
+
                                     if(index+1<SelectCatagoryActivity.finalSelectedFilepath.size())
                                         uploadImage(SelectCatagoryActivity.finalSelectedFilepath.get(index+1),index+1);
                                     else
                                         totalAd_numbergiver();
+
+
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception exception) {
                                     progressBar.setVisibility(View.GONE);
-                                    layoutsec.setVisibility(View.GONE);
-                                    layoutfir.setVisibility(View.VISIBLE);
 
                                     Snackbar snackbar=Snackbar.make(coordinatorLayout,"Failed to upload images.",Snackbar.LENGTH_LONG);
 
@@ -422,6 +434,11 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
                                     textView.setTextColor(Color.WHITE);
 
                                     snackbar.show();
+
+                                    layoutfir.setVisibility(View.GONE);
+                                    slideDown(layoutsec);
+
+                                    next.setVisibility(View.VISIBLE);
                                 }
                             });
 
@@ -431,8 +448,6 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressBar.setVisibility(View.GONE);
-                            layoutsec.setVisibility(View.GONE);
-                            layoutfir.setVisibility(View.VISIBLE);
 
                             Snackbar snackbar=Snackbar.make(coordinatorLayout,"Failed to upload images.",Snackbar.LENGTH_LONG);
 
@@ -442,6 +457,10 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
                             textView.setTextColor(Color.WHITE);
 
                             snackbar.show();
+
+                            layoutfir.setVisibility(View.GONE);
+                            slideDown(layoutsec);
+                            next.setVisibility(View.VISIBLE);
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -470,14 +489,23 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), progressBar.getProgress()+20);
+                progressAnimator.setDuration(1000);
+                progressAnimator.setInterpolator(new LinearInterpolator());
+                progressAnimator.start();
+
                 totalAd_no=dataSnapshot.getChildrenCount()+1;
                 userAd_numbergiver();
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                layoutfir.setVisibility(View.GONE);
+                slideDown(layoutsec);
+                next.setVisibility(View.VISIBLE);
+
                 progressBar.setVisibility(View.GONE);
-                layoutsec.setVisibility(View.GONE);
-                layoutfir.setVisibility(View.VISIBLE);
 
                 Snackbar snackbar=Snackbar.make(coordinatorLayout,"Error...",Snackbar.LENGTH_LONG);
 
@@ -493,19 +521,23 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
 
     public void userAd_numbergiver() {
 
-        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Posted Ad");
+        DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Posted Ad");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), progressBar.getProgress()+10);
+                progressAnimator.setDuration(1000);
+                progressAnimator.setInterpolator(new LinearInterpolator());
+                progressAnimator.start();
+
                 userad_no= dataSnapshot.getChildrenCount()+1;
                 storefinal();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 progressBar.setVisibility(View.GONE);
-                layoutsec.setVisibility(View.GONE);
-                layoutfir.setVisibility(View.VISIBLE);
 
                 Snackbar snackbar=Snackbar.make(coordinatorLayout,"Error...",Snackbar.LENGTH_LONG);
 
@@ -543,6 +575,8 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
         newAd.put("userid",userid);
         newAd.put("condition",condition);
         newAd.put("shownumber",Integer.toString(shownumber));
+        newAd.put("views","0");
+        newAd.put("likes","0");
 
 
         DatabaseReference current_user;
@@ -550,20 +584,31 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
         current_user= FirebaseDatabase.getInstance().getReference().child("Ads").child(SavedAddressAdapter.adaddressmodel.getInstid()).child(Long.toString(totalAd_no));
         current_user.setValue(newAd);
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("Posted Ad").child(Long.toString(userad_no));
+        current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Posted Ad").child(Long.toString(userad_no));
         String adid=SavedAddressAdapter.adaddressmodel.getInstid()+" "+Long.toString(totalAd_no);
         current_user.setValue(adid);
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("username");
+        current_user= FirebaseDatabase.getInstance().getReference().child("Users").child(userid).child("Full_Name");
         current_user.setValue(name.getText().toString());
 
-        current_user= FirebaseDatabase.getInstance().getReference().child("users").child(userid).child("verification");
-        current_user.setValue("1");
 
-        Toast.makeText(getApplicationContext(), "Ad Posted", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(DetailsVerificationActivity.this, HomeActivity.class);
-        startActivity(intent);
-        finishAffinity();
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", progressBar.getProgress(), 100);
+        progressAnimator.setDuration(6000);
+        progressAnimator.setInterpolator(new LinearInterpolator());
+        progressAnimator.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                Intent intent = new Intent(DetailsVerificationActivity.this, AdConfirmationActivity.class);
+                intent.putExtra("ad_no", SavedAddressAdapter.adaddressmodel.getInstid()+" "+totalAd_no);
+                startActivity(intent);
+                finishAffinity();
+            }
+        }, 7500);
+
 
     }
 
@@ -593,6 +638,30 @@ public class DetailsVerificationActivity extends AppCompatActivity implements Co
             Intent intent=new Intent(getApplicationContext(),No_InternetActivity.class);
             startActivity(intent);
         }
+    }
+
+    public void slideUp(View view){
+        view.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                view.getHeight(),  // fromYDelta
+                0);                // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+
+    // slide the view from its current position to below itself
+    public void slideDown(View view){
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                0,                 // fromYDelta
+                view.getHeight()); // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
     }
 
     @Override

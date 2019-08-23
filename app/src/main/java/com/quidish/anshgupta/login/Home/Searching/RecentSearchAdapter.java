@@ -26,7 +26,6 @@ public class RecentSearchAdapter extends RecyclerView.Adapter<RecentSearchAdapte
 
     private List<Pair<String,Pair<String,String>>> list;
     private Context context;
-    private int edit=0;
 
     RecentSearchAdapter(List<Pair<String,Pair<String,String>>> list, Context context) {
         this.list = list;
@@ -63,71 +62,21 @@ public class RecentSearchAdapter extends RecyclerView.Adapter<RecentSearchAdapte
 
         String st = new String(ch);
 
-        if(edit==0)
-        holder.cancel.setVisibility(View.GONE);
-
-        CompleteSearchActivity.edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(edit==0) {
-                    edit=1;
-                    CompleteSearchActivity.edit.setText("DONE");
-                }
-                else{
-                    edit=0;
-                    CompleteSearchActivity.edit.setText("EDIT");
-                }
-
-                for (int x=CompleteSearchActivity.horzontalrecycle.getChildCount(), i = 0; i < x; ++i) {
-
-                    MyHoder holder = (MyHoder) CompleteSearchActivity.horzontalrecycle.getChildViewHolder(CompleteSearchActivity.horzontalrecycle.getChildAt(i));
-
-                    if(edit==1)
-                        holder.cancel.setVisibility(View.VISIBLE);
-                    else
-                        holder.cancel.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        if(!list.get(position).second.second.equals("1"))
         holder.suggestion.setText(st);
         Glide.with(context)
                 .load(list.get(position).second.second)
                 .apply(RequestOptions.circleCropTransform())
                 .into(holder.img);
 
+
         holder.cardview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if(edit==1)
-                {
-                    String ind=list.get(position).first;
-                    String itm="recent"+ind,img="recentimg"+ind;
-
-                    SharedPreferences pref = context.getSharedPreferences("MyPref", MODE_PRIVATE);
-                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor searchhint = pref.edit();
-
-                    searchhint.remove(itm);
-                    searchhint.remove(img);
-
-                    searchhint.apply();
-
-                    CompleteSearchActivity.recsugglist.remove(position);
-                    notifyDataSetChanged();
-
-                    if(CompleteSearchActivity.recsugglist.size()==0)
-                        CompleteSearchActivity.recent.setVisibility(View.GONE);
-                }
-
-                else {
                     Intent intent=new Intent(context,SearchShowActivity.class);
                     intent.putExtra("searchstring", list.get(position).second.first);
                     intent.putExtra("click", "1");
                     context.startActivity(intent);
-                }
             }
         });
 
@@ -164,7 +113,7 @@ public class RecentSearchAdapter extends RecyclerView.Adapter<RecentSearchAdapte
 
     class MyHoder extends RecyclerView.ViewHolder{
         TextView suggestion;
-        ImageView img,cancel;
+        ImageView img;
         LinearLayout cardview;
 
         MyHoder(View itemView) {
@@ -172,7 +121,6 @@ public class RecentSearchAdapter extends RecyclerView.Adapter<RecentSearchAdapte
             suggestion = itemView.findViewById(R.id.text);
             img=itemView.findViewById(R.id.img);
             cardview=itemView.findViewById(R.id.card_view);
-            cancel=itemView.findViewById(R.id.cancel);
         }
 
     }

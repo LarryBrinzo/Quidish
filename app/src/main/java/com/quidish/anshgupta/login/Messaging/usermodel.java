@@ -73,7 +73,7 @@ public class usermodel {
         return ad_no;
     }
 
-    public void setAd_no(String ad_no) {
+    public void setAdno(String ad_no) {
         this.ad_no = ad_no;
     }
 }
