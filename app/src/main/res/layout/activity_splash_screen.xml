@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:gravity="center"
-    tools:context=".SpashScreenActivity">
+    tools:context=".SplashScreenActivity">
 
     <ImageView
         android:id="@+id/drawtog"

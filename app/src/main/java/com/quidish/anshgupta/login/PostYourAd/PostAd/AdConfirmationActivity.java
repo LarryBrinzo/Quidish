@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.BottomNavigation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.MyAdsAndUserProfile.MyAdDiscriptionActivity;
 import com.quidish.anshgupta.login.R;
 

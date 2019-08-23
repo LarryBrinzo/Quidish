@@ -23,7 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.BottomNavigation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.R;
 import java.util.Objects;
 

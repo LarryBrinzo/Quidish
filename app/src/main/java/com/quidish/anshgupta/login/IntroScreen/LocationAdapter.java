@@ -1,4 +1,4 @@
-package com.quidish.anshgupta.login.Home.Location;
+package com.quidish.anshgupta.login.IntroScreen;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -14,8 +14,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.BottomNavigation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.Location.AddInstituteActivity;
+import com.quidish.anshgupta.login.Home.Location.GetUsersLocationActivity;
 import com.quidish.anshgupta.login.R;
+import com.quidish.anshgupta.login.SplashScreenActivity;
 
 import java.util.List;
 
@@ -26,11 +29,12 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.MyHode
 
     private List<Pair<String,String>> list;
     private Context context;
+    private PrefManager prefManager;
 
     public LocationAdapter(List<Pair<String,String>> list, Context context) {
         this.list = list;
         this.context = context;
-
+        prefManager = new PrefManager(context);
     }
 
     @NonNull
@@ -68,13 +72,14 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.MyHode
                 searchhint.putInt("institutenumber",instnum);
                 searchhint.apply();
 
-                Intent intent=new Intent(context, BottomNavigationDrawerActivity.class);
+                prefManager.setFirstTimeLaunch(false);
+                Intent intent=new Intent(context, SplashScreenActivity.class);
                 context.startActivity(intent);
                 ((Activity)context).finish();
                 }
 
                 else{
-                    Intent intent=new Intent(context,AddInstituteActivity.class);
+                    Intent intent=new Intent(context, AddInstituteActivity.class);
                     intent.putExtra("instname", list.get(position).first);
                     intent.putExtra("instid", list.get(position).second);
                     context.startActivity(intent);

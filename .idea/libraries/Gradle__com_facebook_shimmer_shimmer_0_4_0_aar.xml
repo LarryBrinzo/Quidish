@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.facebook.shimmer:shimmer:0.4.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/117891bd4ef1cd4166e8418f0718c443/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/9119f83847e7f201a90cb2a17b99559f/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/117891bd4ef1cd4166e8418f0718c443/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/117891bd4ef1cd4166e8418f0718c443/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/9119f83847e7f201a90cb2a17b99559f/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/shimmer-0.4.0.aar/9119f83847e7f201a90cb2a17b99559f/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -33,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.AdModel;
 import com.quidish.anshgupta.login.Home.AllCategoriesAdapter;
-import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
+import com.quidish.anshgupta.login.Home.BottomNavigation.HomeFragment;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.Network.No_InternetActivity;
@@ -358,6 +358,8 @@ public class CompleteSearchActivity extends AppCompatActivity implements Connect
     }
 
     public void addCategories(){
+
+        catlist.clear();
 
         catlist.add(new Pair("Mobile Phones & Tablets","mobile_cat"));
         catlist.add(new Pair("Electronics","electronics"));

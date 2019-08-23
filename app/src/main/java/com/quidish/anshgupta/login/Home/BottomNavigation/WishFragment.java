@@ -1,13 +1,10 @@
-package com.quidish.anshgupta.login.Home.BottomNavifation;
+package com.quidish.anshgupta.login.Home.BottomNavigation;
 
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,8 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.AdModel;
-import com.quidish.anshgupta.login.Messaging.MyPagerAdapter;
-import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
 import com.quidish.anshgupta.login.MyAccount.WishlistAdapter;
 import com.quidish.anshgupta.login.R;
 

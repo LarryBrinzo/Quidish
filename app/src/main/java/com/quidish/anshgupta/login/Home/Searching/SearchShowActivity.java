@@ -17,7 +17,6 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.AdModel;
-import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
+import com.quidish.anshgupta.login.Home.BottomNavigation.HomeFragment;
 import com.quidish.anshgupta.login.Home.UserAdsAdapter;
 import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
 import com.quidish.anshgupta.login.Network.MyApplication;

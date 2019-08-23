@@ -51,7 +51,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
+import com.quidish.anshgupta.login.Home.BottomNavigation.HomeFragment;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.Messaging.MessageActivity;
 import com.quidish.anshgupta.login.Messaging.MyChatActivity;

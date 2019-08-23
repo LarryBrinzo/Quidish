@@ -593,6 +593,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
+                                android:layout_marginRight="10dp"
                                 android:descendantFocusability="blocksDescendants"
                                 android:background="#FFFFFF"
                                 android:clipToPadding="false"
@@ -600,10 +601,6 @@
 
                             </android.support.v7.widget.RecyclerView>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="#F1F1F3"/>
 
                         </LinearLayout>
 

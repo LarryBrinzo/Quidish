@@ -1,4 +1,4 @@
-package com.quidish.anshgupta.login.Home.BottomNavifation;
+package com.quidish.anshgupta.login.Home.BottomNavigation;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,44 +17,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.quidish.anshgupta.login.LoginRegister.ForgetPass;
-import com.quidish.anshgupta.login.LoginRegister.LoginActivity;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
-import com.quidish.anshgupta.login.LoginRegister.RegisterActivity;
 import com.quidish.anshgupta.login.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;

@@ -3,9 +3,6 @@ package com.quidish.anshgupta.login.Home;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,7 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.quidish.anshgupta.login.AdDiscriptionActivity;
 import com.quidish.anshgupta.login.AdModel;
-import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
+import com.quidish.anshgupta.login.Home.BottomNavigation.HomeFragment;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.R;
 

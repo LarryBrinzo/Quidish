@@ -1,4 +1,4 @@
-package com.quidish.anshgupta.login.Home.BottomNavifation;
+package com.quidish.anshgupta.login.Home.BottomNavigation;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -342,6 +340,8 @@ public class HomeFragment extends Fragment {
 
 
     public void addCategories(){
+
+        catlist.clear();
 
         catlist.add(new Pair("Mobile Phones & Tablets","mobile_cat"));
         catlist.add(new Pair("Electronics","electronics"));

@@ -46,14 +46,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.BottomNavigation.BottomNavigationDrawerActivity;
 import com.quidish.anshgupta.login.LoginRegister.LoginSignupactivity;
 import com.quidish.anshgupta.login.Messaging.MyChatActivity;
 import com.quidish.anshgupta.login.MyAccount.MyWishlistActivity;
 import com.quidish.anshgupta.login.MyCustomPagerAdapter;
-import com.quidish.anshgupta.login.PostYourAd.PostAd.AdConfirmationActivity;
-import com.quidish.anshgupta.login.PostYourAd.PostAd.PhoneVerificationActivity;
-import com.quidish.anshgupta.login.PostYourAd.PostAd.SavedAddressAdapter;
 import com.quidish.anshgupta.login.R;
 
 import java.util.ArrayList;

@@ -48,7 +48,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.quidish.anshgupta.login.Home.BottomNavifation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.Home.BottomNavigation.BottomNavigationDrawerActivity;
+import com.quidish.anshgupta.login.IntroScreen.LocationAdapter;
 import com.quidish.anshgupta.login.R;
 import com.quidish.anshgupta.login.SavedLocationModel;
 

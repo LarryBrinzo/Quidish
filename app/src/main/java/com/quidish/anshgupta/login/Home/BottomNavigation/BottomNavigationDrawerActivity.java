@@ -1,6 +1,5 @@
-package com.quidish.anshgupta.login.Home.BottomNavifation;
+package com.quidish.anshgupta.login.Home.BottomNavigation;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;

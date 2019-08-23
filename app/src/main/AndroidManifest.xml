@@ -30,7 +30,7 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateHidden|adjustResize">
         <activity android:name=".PostYourAd.PostAd.AdConfirmationActivity"></activity>
-        <activity android:name=".Home.BottomNavifation.BottomNavigationDrawerActivity" />
+        <activity android:name=".Home.BottomNavigation.BottomNavigationDrawerActivity" />
         <activity
             android:name=".IntroScreen.WelcomeActivity"
             android:configChanges="orientation"
@@ -41,7 +41,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
 
-                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
@@ -103,11 +102,11 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:wname=".ZoomActivity"
+            android:name=".ZoomActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SpashScreenActivity"
+            android:name=".SplashScreenActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait" />
 

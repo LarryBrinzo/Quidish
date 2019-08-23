@@ -1,4 +1,4 @@
-package com.quidish.anshgupta.login.Home.BottomNavifation;
+package com.quidish.anshgupta.login.Home.BottomNavigation;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,9 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.quidish.anshgupta.login.AdModel;
 import com.quidish.anshgupta.login.MyAdsAndUserProfile.MyActiveAdsAdapter;
-import com.quidish.anshgupta.login.MyAdsAndUserProfile.MyAdsActivity;
-import com.quidish.anshgupta.login.Network.ConnectivityReceiver;
-import com.quidish.anshgupta.login.Network.MyApplication;
 import com.quidish.anshgupta.login.R;
 
 import java.util.ArrayList;

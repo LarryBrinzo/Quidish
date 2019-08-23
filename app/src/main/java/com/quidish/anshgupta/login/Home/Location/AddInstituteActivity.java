@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.quidish.anshgupta.login.Home.BottomNavifation.HomeFragment;
+import com.quidish.anshgupta.login.Home.BottomNavigation.HomeFragment;
 import com.quidish.anshgupta.login.R;
 
 public class AddInstituteActivity extends AppCompatActivity {
